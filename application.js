@@ -25,6 +25,11 @@ class Post {
 	 * @type {string|null}
 	 */
 	#authorHandle = null;
+	/**
+	 * The alt text of the media in the post.
+	 * @type {string[]|null}
+	 */
+	#mediaAltText = null;
 
 	/**
 	 * @param {HTMLElement} postElement
@@ -92,6 +97,21 @@ class Post {
 	getAuthorHandle() {
 		return null;
 	}
+
+	/**
+	 * @returns {string[]|null}
+	 */
+	mediaAltText() {
+		this.#mediaAltText = this.#mediaAltText ?? this.getMediaAltText();
+		return this.#mediaAltText;
+	}
+
+	/**
+	 * @returns {string[]|null}
+	 */
+	getMediaAltText() {
+		return null;
+	}
 }
 
 class BlueskyPost extends Post {
@@ -129,6 +149,23 @@ class BlueskyPost extends Post {
 		}
 		return null;
 	}
+
+	getMediaAltText() {
+		try {
+			let altTexts = [];
+			const imageContainers = $(this.postElement).find(".expo-image-container").parent().each((index, element) => {
+				const altText = element.getAttribute("aria-label");
+				if (altText) {
+					altTexts.push(altText);
+				}
+			});
+			return altTexts;
+		} catch (ex) {
+			error(ex);
+			error("Could not find media alt text");
+		}
+		return null;
+	}
 }
 
 class Parser {
@@ -159,7 +196,7 @@ class BlueskyParser extends Parser {
 
 const PROCESSED_INDICATOR = "mutable-parsed";
 
-const muteList = ["David", "threads"];
+const muteList = ["watercolor", "threads"];
 
 init();
 
@@ -181,15 +218,33 @@ function parse() {
 			const contents = post.postContents();
 			log(post.authorName());
 			if (contents && muteList.some((word) => contents.includes(word))) {
-				let element = post.postElement;
-				element.style.filter = "blur(10px)";
-				element.addEventListener("click", function (event) {
-					element.style.filter = "blur(0px)";
-					event.stopPropagation();
-				});
+				hidePost(post.postElement);
+				continue;
+			}
+			const altTexts = post.mediaAltText();
+			if (altTexts) {
+				for (let altText of altTexts) {
+					if (altText && muteList.some((word) => altText.includes(word))) {
+						hidePost(post.postElement);
+						break;
+					}
+				}
 			}
 		}
 	}
+}
+
+/**
+ * @param {HTMLElement} element
+ */
+function hidePost(element) {
+	element.style.filter = "blur(10px)";
+	element.addEventListener("click", function (event) {
+		if (element.style.filter === "blur(10px)") {
+			element.style.filter = "blur(0px)";
+			event.stopPropagation();
+		}
+	});
 }
 
 /**
