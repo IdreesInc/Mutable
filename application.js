@@ -1,13 +1,5 @@
 // @ts-check
 
-console.log("Mutable has been loaded successfully!");
-
-document.addEventListener("keydown", function (event) {
-	if (event.code === "Space") {
-		parse();
-	}
-});
-
 /**
  * An abstract class representing a post on a content feed.
  * This class is designed to lazy-load the parsed elements of the post only when requested and cache the values.
@@ -154,7 +146,7 @@ class BlueskyParser extends Parser {
 	 * @returns {Post[]}
 	 */
 	getPosts() {
-		let postContainers = $(document).find('[data-testid^="feedItem"]');
+		let postContainers = $(document).find('[data-testid^="feedItem"][' + PROCESSED_INDICATOR + '!="true"]');
 		let posts = [];
 		postContainers.each((index) => {
 			let postElement = postContainers[index];
@@ -165,13 +157,27 @@ class BlueskyParser extends Parser {
 	}
 }
 
-let muteList = ["David", "threads"];
+const PROCESSED_INDICATOR = "mutable-parsed";
+
+const muteList = ["David", "threads"];
+
+init();
+
+function init() {
+	log("Mutable has been loaded successfully!");
+	document.addEventListener("keydown", function (event) {
+		if (event.code === "Space") {
+			parse();
+		}
+	});
+}
 
 function parse() {
 	if (window.location.host === "bsky.app") {
 		let posts = new BlueskyParser().getPosts();
 		log(`Found ${posts.length} posts`)
 		for (let post of posts) {
+			post.postElement.setAttribute(PROCESSED_INDICATOR, "true");
 			const contents = post.postContents();
 			log(post.authorName());
 			if (contents && muteList.some((word) => contents.includes(word))) {
