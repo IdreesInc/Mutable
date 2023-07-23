@@ -153,7 +153,7 @@ class BlueskyPost extends Post {
 	getMediaAltText() {
 		try {
 			let altTexts = [];
-			const imageContainers = $(this.postElement).find(".expo-image-container").parent().each((index, element) => {
+			$(this.postElement).find(".expo-image-container").parent().each((index, element) => {
 				const altText = element.getAttribute("aria-label");
 				if (altText) {
 					altTexts.push(altText);
