@@ -194,19 +194,73 @@ class BlueskyParser extends Parser {
 	}
 }
 
-const PROCESSED_INDICATOR = "mutable-parsed";
+class MutePattern {
+	/**
+	 * Determine whether the provided text matches this pattern.
+	 * @abstract
+	 * @param {string} contents The contents to test the match against
+	 * @returns {boolean} Whether the text matches this pattern
+	 */
+	isMatch(contents) {
+		return false;
+	}
+}
 
-const muteList = ["watercolor", "threads"];
+class Keyword extends MutePattern {
+	/**
+	 * @param {string} word
+	 */
+	constructor(word, caseSensitive = false) {
+		super();
+		this.word = word;
+		this.caseSensitive = caseSensitive;
+	}
+
+	/**
+	 * @param {string} contents
+	 */
+	isMatch(contents) {
+		if (this.caseSensitive) {
+			return contents.includes(this.word);
+		} else {
+			return contents.toLowerCase().includes(this.word.toLowerCase());
+		}
+	}
+}
+
+class Group {
+	/**
+	 * @param {MutePattern[]} patterns
+	 */
+	constructor(patterns) {
+		this.patterns = patterns;
+	}
+}
+
+const PROCESSED_INDICATOR = "mutable-parsed";
+/** @type {Group[]} */
+let groups = [];
 
 init();
 
 function init() {
 	log("Mutable has been loaded successfully!");
+	initGroups();
 	document.addEventListener("keydown", function (event) {
 		if (event.code === "Space") {
 			parse();
 		}
 	});
+}
+
+function initGroups() {
+	const defaultGroup = new Group([
+		new Keyword("watercolor"),
+		new Keyword("threads"),
+		new Keyword("david"),
+		new Keyword("need"),
+	]);
+	groups.push(defaultGroup);
 }
 
 function parse() {
@@ -215,18 +269,35 @@ function parse() {
 		log(`Found ${posts.length} posts`)
 		for (let post of posts) {
 			post.postElement.setAttribute(PROCESSED_INDICATOR, "true");
-			const contents = post.postContents();
 			log(post.authorName());
-			if (contents && muteList.some((word) => contents.includes(word))) {
+			if (match(post)) {
 				hidePost(post.postElement);
-				continue;
 			}
-			const altTexts = post.mediaAltText();
-			if (altTexts) {
-				for (let altText of altTexts) {
-					if (altText && muteList.some((word) => altText.includes(word))) {
-						hidePost(post.postElement);
-						break;
+		}
+	}
+}
+
+/**
+ * @param {Post} post
+ */
+function match(post) {
+	const contents = post.postContents();
+	if (contents) {
+		for (let group of groups) {
+			for (let pattern of group.patterns) {
+				if (pattern.isMatch(contents)) {
+					return true;
+				}
+			}
+		}
+	}
+	const altTexts = post.mediaAltText();
+	if (altTexts) {
+		for (let altText of altTexts) {
+			for (let group of groups) {
+				for (let pattern of group.patterns) {
+					if (pattern.isMatch(altText)) {
+						return true;
 					}
 				}
 			}
