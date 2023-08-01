@@ -194,7 +194,42 @@ class BlueskyParser extends Parser {
 	}
 }
 
+class Group {
+	/**
+	 * @param {MutePattern[]} patterns
+	 */
+	constructor(patterns) {
+		this.patterns = patterns;
+	}
+
+	/**
+	 * Deserialize a group from JSON.
+	 * @param {object} json
+	 * @returns {Group|null} The deserialized group, or null if the group could not be deserialized
+	 */
+	static fromJson(json) {
+		if (json.patterns === undefined) {
+			error("Missing patterns property: " + JSON.stringify(json));
+			return null;
+		}
+		let patterns = [];
+		for (let pattern of json.patterns) {
+			let deserializedPattern = MutePattern.fromJson(pattern);
+			if (deserializedPattern) {
+				patterns.push(deserializedPattern);
+			}
+		}
+		return new Group(patterns);
+	}
+}
+
 class MutePattern {
+	/**
+	 * @param {string} patternType
+	 */
+	constructor(patternType) {
+		this.patternType = patternType;
+	}
 	/**
 	 * Determine whether the provided text matches this pattern.
 	 * @abstract
@@ -204,6 +239,28 @@ class MutePattern {
 	isMatch(contents) {
 		return false;
 	}
+
+	/**
+	 * Deserialize a pattern from JSON.
+	 * @param {object} json
+	 * @returns {MutePattern|null} The deserialized pattern, or null if the pattern could not be deserialized
+	 */
+	static fromJson(json) {
+		if (json.patternType === "keyword") {
+			if (json.word === undefined) {
+				error("Missing word property: " + JSON.stringify(json));
+				return null;
+			}
+			if (json.caseSensitive === undefined) {
+				error("Missing caseSensitive property: " + JSON.stringify(json));
+				return null;
+			}
+			return new Keyword(json.word, json.caseSensitive);
+		} else {
+			error(`Unknown pattern type: ${json.patternType}`);
+			return null;
+		}
+	}
 }
 
 class Keyword extends MutePattern {
@@ -211,7 +268,7 @@ class Keyword extends MutePattern {
 	 * @param {string} word
 	 */
 	constructor(word, caseSensitive = false) {
-		super();
+		super("keyword");
 		this.word = word;
 		this.caseSensitive = caseSensitive;
 	}
@@ -228,24 +285,108 @@ class Keyword extends MutePattern {
 	}
 }
 
-class Group {
+class Settings {
 	/**
-	 * @param {MutePattern[]} patterns
+	 * @param {Object<string, Group>} [groups]
 	 */
-	constructor(patterns) {
-		this.patterns = patterns;
+	constructor(groups) {
+		this.groups = groups ?? { "default": new Group([])};
+	}
+
+	/**
+	 * Return the list of groups.
+	 * @returns {Group[]}
+	 */
+	getGroupsList() {
+		return Object.values(this.groups);
+	}
+
+	/**
+	 * Deserialize settings from JSON.
+	 * @param {object} json
+	 * @returns {Settings|null} The deserialized settings, or null if the settings could not be deserialized
+	 */
+	static fromJson(json) {
+		if (json.groups === undefined) {
+			error("Missing groups property: " + JSON.stringify(json));
+			return null;
+		}
+		/** @type {Object<string, Group>} */
+		let groups = {};
+		for (let [groupName, group] of Object.entries(json.groups)) {
+			if (typeof groupName !== "string") {
+				error("Group name is not a string: " + JSON.stringify(groupName));
+				continue;
+			}
+			let deserializedGroup = Group.fromJson(group);
+			if (deserializedGroup) {
+				groups[groupName] = deserializedGroup;
+			}
+		}
+		if (Object.keys(groups).length === 0) {
+			error("No groups were deserialized");
+			return null;
+		} else if (!groups["default"]) {
+			error("Default group was not found");
+			return null;
+		}
+		return new Settings(groups);
 	}
 }
 
 const PROCESSED_INDICATOR = "mutable-parsed";
-/** @type {Group[]} */
-let groups = [];
+/** @type {Settings} */
+let settings;
 
 init();
 
+/**
+ * Get the serialized settings from the web extension sync storage.
+ * @returns {Promise<object>} A promise that resolves to the serialized settings
+ */
+function getSerializedSettings() {
+	return new Promise((resolve, reject) => {
+		chrome.storage.sync.get("settings", function (result) {
+			if (chrome.runtime.lastError) {
+				error(chrome.runtime.lastError);
+				reject(chrome.runtime.lastError);
+			} else {
+				resolve(result.settings);
+			}
+		});
+	});
+}
+
+/**
+ * Save the serialized settings to the web extension sync storage.
+ * @param {Settings} settings The settings to upload
+ */
+function putSerializedSettings(settings) {
+	chrome.storage.sync.set({ "settings": settings }, function () {
+		if (chrome.runtime.lastError) {
+			error(chrome.runtime.lastError);
+		}
+	});
+}
+
 function init() {
 	log("Mutable has been loaded successfully!");
-	initGroups();
+	getSerializedSettings().then((result) => {
+		if (result) {
+			log("Serialized settings loaded from sync storage");
+			let restored = Settings.fromJson(result);
+			if (restored) {
+				log("Settings restored successfully");
+				settings = restored;
+				return;
+			} else {
+				error("Settings could not be restored");
+			}
+		} else {
+			log("Serialized settings not found");
+		}
+		settings = new Settings();
+	});
 	document.addEventListener("keydown", function (event) {
 		if (event.code === "Space") {
 			parse();
@@ -253,16 +394,9 @@ function init() {
 	});
 }
 
-function initGroups() {
-	const defaultGroup = new Group([
-		new Keyword("watercolor"),
-		new Keyword("threads"),
-		new Keyword("david"),
-		new Keyword("need"),
-	]);
-	groups.push(defaultGroup);
-}
-
+/**
+ * Parse the page for posts and hide any that match the mute patterns.
+ */
 function parse() {
 	if (window.location.host === "bsky.app") {
 		let posts = new BlueskyParser().getPosts();
@@ -278,10 +412,12 @@ function parse() {
 }
 
 /**
- * @param {Post} post
+ * Determine whether the provided post matches any of the mute patterns.
+ * @param {Post} post The post to check
  */
 function match(post) {
 	const contents = post.postContents();
+	const groups = settings.getGroupsList();
 	if (contents) {
 		for (let group of groups) {
 			for (let pattern of group.patterns) {

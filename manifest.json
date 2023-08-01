@@ -1,6 +1,6 @@
 {
 	"description": "Makes the web mutable",
-	"manifest_version": 2,
+	"manifest_version": 3,
 	"name": "Mutable",
 	"version": "1.0",
 	"homepage_url": "https://idreesinc.com",
@@ -12,8 +12,16 @@
 		"js": ["jquery.js", "application.js"]
 	  }
 	],
-	"browser_action": {
+	"action": {
 		"default_popup": "settings/settings.html"
+	},
+	"permissions": [
+		"storage"
+	],
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "mutable@idreesinc.com"
+		}
 	}
 }
   
