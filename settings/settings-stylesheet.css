@@ -251,10 +251,32 @@ input:checked + .toggle-inner:before {
 	display: flex;
 	flex-direction: column;
 	padding: 12px;
+	padding-right: 6px;
 }
 
 .group-element {
 	margin-bottom: 10px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.element-delete {
+	display: inline;
+	font-family: 'Courier New', Courier, monospace;
+	font-size: 20px;
+	color: grey;
+	background-color: transparent;
+	border: none;
+	box-sizing: border-box;
+}
+
+.element-delete:hover {
+	color: black;
+}
+
+.element-delete:active {
+	color: red;
 }
 
 .add-button {

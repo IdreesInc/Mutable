@@ -1,5 +1,5 @@
 // @ts-check
-/// <reference path="types.js" />
+/// <reference path="shared.js" />
 
 const PROCESSED_INDICATOR = "mutable-parsed";
 /** @type {Settings} */
@@ -7,60 +7,27 @@ let settings = new Settings();
 
 init();
 
-/**
- * Get the serialized settings from the web extension sync storage.
- * @returns {Promise<object>} A promise that resolves to the serialized settings
- */
-function getSerializedSettings() {
-	return new Promise((resolve, reject) => {
-		chrome.storage.sync.get("settings", function (result) {
-			if (chrome.runtime.lastError) {
-				error(chrome.runtime.lastError);
-				reject(chrome.runtime.lastError);
-			} else {
-				resolve(result.settings);
-			}
-		});
-	});
-}
-
-/**
- * Asynchronously get the settings from the web extension sync storage and update the settings variable.
- */
-function getSettings() {
-	getSerializedSettings().then((result) => {
-		if (result) {
-			log("Serialized settings loaded from sync storage");
-			let restored = Settings.fromJson(result);
-			if (restored) {
-				log("Settings restored successfully");
-				settings = restored;
-			} else {
-				error("Settings could not be restored");
-			}
-		} else {
-			log("Serialized settings not found");
-		}
-	});
-}
-
-/**
- * Save the settings to the web extension sync storage.
- * @param {Settings} settings The settings to upload
- */
-function putSettings(settings) {
-	chrome.storage.sync.set({ "settings": settings }, function () {
-		if (chrome.runtime.lastError) {
-			error(chrome.runtime.lastError);
-		}
-	});
-}
-
-
-
 function init() {
 	log("Mutable has been loaded successfully!");
-	getSettings();
+	getSettings((result) => {
+		settings = result;
+	});
+	// Every 5 seconds, parse the page for new posts
+	setInterval(() => {
+		parse();
+	}, 5000);
+	// Also parse whenever the page is scrolled (but only once per second)
+	let scrollTimeout = null;
+	document.addEventListener("wheel", () => {
+		if (scrollTimeout) {
+			clearTimeout(scrollTimeout);
+		} else {
+			parse();
+		}
+		scrollTimeout = setTimeout(() => {
+			parse();
+		}, 100);
+	});
 }
 
 /**
@@ -72,7 +39,6 @@ function parse() {
 		log(`Found ${posts.length} posts`)
 		for (let post of posts) {
 			post.postElement.setAttribute(PROCESSED_INDICATOR, "true");
-			log(post.authorName());
 			if (match(post)) {
 				hidePost(post.postElement);
 			}

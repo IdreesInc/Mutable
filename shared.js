@@ -196,10 +196,28 @@ class BlueskyParser extends Parser {
 
 class Group {
 	/**
+	 * @param {string} id
+	 * @param {string} name
 	 * @param {MutePattern[]} patterns
 	 */
-	constructor(patterns) {
+	constructor(id, name, patterns) {
+		this.id = id;
+		this.name = name;
 		this.patterns = patterns;
+	}
+
+	/**
+	 * @param {MutePattern} pattern
+	 */
+	addPattern(pattern) {
+		this.patterns.push(pattern);
+	}
+
+	/**
+	 * @param {string} patternId
+	 */
+	deletePattern(patternId) {
+		this.patterns = this.patterns.filter((pattern) => pattern.id !== patternId);
 	}
 
 	/**
@@ -208,6 +226,14 @@ class Group {
 	 * @returns {Group|null} The deserialized group, or null if the group could not be deserialized
 	 */
 	static fromJson(json) {
+		if (json.id === undefined || typeof json.id !== "string") {
+			console.error("Missing id property: " + JSON.stringify(json));
+			return null;
+		}
+		if (json.name === undefined || typeof json.name !== "string") {
+			console.error("Missing name property: " + JSON.stringify(json));
+			return null;
+		}
 		if (json.patterns === undefined) {
 			console.error("Missing patterns property: " + JSON.stringify(json));
 			return null;
@@ -219,15 +245,17 @@ class Group {
 				patterns.push(deserializedPattern);
 			}
 		}
-		return new Group(patterns);
+		return new Group(json.id, json.name, patterns);
 	}
 }
 
 class MutePattern {
 	/**
+	 * @param {string} id
 	 * @param {string} patternType
 	 */
-	constructor(patternType) {
+	constructor(id, patternType) {
+		this.id = id;
 		this.patternType = patternType;
 	}
 	/**
@@ -241,11 +269,24 @@ class MutePattern {
 	}
 
 	/**
+	 * Get the plaintext representation of this pattern.
+	 * @abstract
+	 * @returns {string} The plaintext representation of this pattern
+	 */
+	plaintext() {
+		return "";
+	}
+
+	/**
 	 * Deserialize a pattern from JSON.
 	 * @param {object} json
 	 * @returns {MutePattern|null} The deserialized pattern, or null if the pattern could not be deserialized
 	 */
 	static fromJson(json) {
+		if (json.id === undefined || typeof json.id !== "string") {
+			console.error("Missing id property: " + JSON.stringify(json));
+			return null;
+		}
 		if (json.patternType === "keyword") {
 			if (json.word === undefined) {
 				console.error("Missing word property: " + JSON.stringify(json));
@@ -255,7 +296,7 @@ class MutePattern {
 				console.error("Missing caseSensitive property: " + JSON.stringify(json));
 				return null;
 			}
-			return new Keyword(json.word, json.caseSensitive);
+			return new KeywordMute(json.id, json.word, json.caseSensitive);
 		} else {
 			console.error(`Unknown pattern type: ${json.patternType}`);
 			return null;
@@ -263,12 +304,13 @@ class MutePattern {
 	}
 }
 
-class Keyword extends MutePattern {
+class KeywordMute extends MutePattern {
 	/**
+	 * @param {string} id
 	 * @param {string} word
 	 */
-	constructor(word, caseSensitive = false) {
-		super("keyword");
+	constructor(id, word, caseSensitive = false) {
+		super(id, "keyword");
 		this.word = word;
 		this.caseSensitive = caseSensitive;
 	}
@@ -283,6 +325,10 @@ class Keyword extends MutePattern {
 			return contents.toLowerCase().includes(this.word.toLowerCase());
 		}
 	}
+
+	plaintext() {
+		return this.word;
+	}
 }
 
 class Settings {
@@ -290,7 +336,7 @@ class Settings {
 	 * @param {Object<string, Group>} [groups]
 	 */
 	constructor(groups) {
-		this.groups = groups ?? { "default": new Group([])};
+		this.groups = groups ?? { "default": new Group("default", "Default Group", [])};
 	}
 
 	/**
@@ -313,14 +359,14 @@ class Settings {
 		}
 		/** @type {Object<string, Group>} */
 		let groups = {};
-		for (let [groupName, group] of Object.entries(json.groups)) {
-			if (typeof groupName !== "string") {
-				console.error("Group name is not a string: " + JSON.stringify(groupName));
+		for (let [groupId, group] of Object.entries(json.groups)) {
+			if (typeof groupId !== "string") {
+				console.error("Group id is not a string: " + JSON.stringify(groupId));
 				continue;
 			}
 			let deserializedGroup = Group.fromJson(group);
 			if (deserializedGroup) {
-				groups[groupName] = deserializedGroup;
+				groups[groupId] = deserializedGroup;
 			}
 		}
 		if (Object.keys(groups).length === 0) {
@@ -332,4 +378,90 @@ class Settings {
 		}
 		return new Settings(groups);
 	}
+}
+
+function uuid() {
+	return crypto.randomUUID();
+}
+
+/**
+ * Get the serialized settings from the web extension sync storage.
+ * @returns {Promise<object>} A promise that resolves to the serialized settings
+ */
+function getSerializedSettings() {
+	return new Promise((resolve, reject) => {
+		chrome.storage.sync.get("settings", function (result) {
+			if (chrome.runtime.lastError) {
+				error(chrome.runtime.lastError);
+				reject(chrome.runtime.lastError);
+			} else {
+				resolve(result.settings);
+			}
+		});
+	});
+}
+
+/**
+ * Asynchronously get the settings from the web extension sync storage and update the settings variable.
+ * @param {(arg0: Settings) => void} onSuccess The function to call when the settings have been loaded successfully
+ * @param {() => void} [onError] The function to call when the settings could not be loaded
+ */
+function getSettings(onSuccess, onError) {
+	if (typeof chrome === "undefined") {
+		console.error("Chrome API not found");
+		if (onError) {
+			onError();
+		}
+		return;
+	}
+	getSerializedSettings().then((result) => {
+		if (result) {
+			console.log("Serialized settings loaded from sync storage");
+			let restored = Settings.fromJson(result);
+			if (restored) {
+				console.log("Settings restored successfully");
+				onSuccess(restored);
+			} else {
+				console.error("Settings could not be restored");
+				if (onError) {
+					onError();
+				}
+			}
+		} else {
+			console.error("Serialized settings not found");
+			if (onError) {
+				onError();
+			}
+		}
+	});
+}
+
+/**
+ * Save the settings to the web extension sync storage.
+ * @param {Settings} settings The settings to upload
+ * @param {() => void} [onSuccess] The function to call when the settings have been saved successfully
+ * @param {() => void} [onError] The function to call when the settings could not be saved
+ */
+function putSettings(settings, onSuccess, onError) {
+	if (typeof chrome === "undefined") {
+		console.error("Chrome API not found");
+		if (onError) {
+			onError();
+		}
+		return;
+	}
+	chrome.storage.sync.set({ "settings": settings }, function () {
+		if (chrome.runtime.lastError) {
+			console.error("Settings could not be saved");
+			console.error(chrome.runtime.lastError);
+			if (onError) {
+				onError();
+			}
+		} else {
+			console.log("Settings saved successfully");
+			if (onSuccess) {
+				onSuccess();
+			}
+		}
+	});
 }
