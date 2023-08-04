@@ -7,6 +7,9 @@ const groupsContainer = document.getElementById("groups-container");
 /** @type {HTMLElement} */
 // @ts-ignore
 const websitesContent = document.getElementById("websites-content");
+/** @type {HTMLElement} */
+// @ts-ignore
+const background = document.getElementById("background");
 
 let currentSettings = new Settings();
 
@@ -21,6 +24,25 @@ function init() {
 		initSettings();
 		renderSettings();
 	});
+	let scrollRatio = 0;
+	let mouseRatio = 0;
+	// Move background x position as a product of the scroll y position
+	document.addEventListener("scroll", () => {
+		// calculate scroll ratio (0 at top, 1 at bottom)
+		scrollRatio = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+		updateFoil(scrollRatio, mouseRatio);
+	});
+	// Move background x position as a product of the mouse y position
+	document.addEventListener("mousemove", (event) => {
+		mouseRatio = event.clientY / window.innerHeight;
+		updateFoil(scrollRatio, mouseRatio);
+	});
+}
+
+function updateFoil(scrollRatio, mouseRatio) {
+	let ratio = scrollRatio * 0.5 + mouseRatio * 0.5;
+	background.style.backgroundPositionX  = `${ratio * 80}%`;
+	// TODO: Accredit kjpargeter
 }
 
 function initSettings() {
