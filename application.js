@@ -11,11 +11,17 @@ function init() {
 	log("Mutable has been loaded successfully!");
 	getSettings((result) => {
 		settings = result;
+		initParsing();
+	}, () => {
+		initParsing();
 	});
 	subscribeToSettings((result) => {
 		log("Settings updated");
 		settings = result;
 	});
+}
+
+function initParsing() {
 	// Every second, parse the page for new posts
 	setInterval(() => {
 		parse();
@@ -53,6 +59,7 @@ function parse() {
 		post.postElement.setAttribute(PROCESSED_INDICATOR, "true");
 		// console.log(post.authorHandle());
 		// console.log(post.authorName());
+		// console.log(post.postContents());
 		if (match(post)) {
 			hidePost(post.postElement);
 		}
@@ -93,11 +100,10 @@ function match(post) {
  * @param {HTMLElement} element
  */
 function hidePost(element) {
-	const FILTER = "blur(10px)";
-	element.style.filter = FILTER;
+	element.classList.add("mutable-blur");
 	element.addEventListener("click", function (event) {
-		if (element.style.filter === FILTER) {
-			element.style.filter = "blur(0px)";
+		if (element.classList.contains("mutable-blur")) {
+			element.classList.remove("mutable-blur");
 			event.stopPropagation();
 		}
 	});

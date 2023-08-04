@@ -204,6 +204,37 @@ class BlueskyPost extends Post {
 	}
 }
 
+class MastodonPost extends Post {
+	getPostText() {
+		return this.postElement.innerText;
+	}
+
+	getPostContents() {
+		const text = this.postText();
+		return text === null ? null : text.replace(this.authorName() ?? "", "").replace(this.authorHandle() ?? "", "");
+	}
+
+	getAuthorName() {
+		try {
+			return $(this.postElement).find(".display-name__html").first().text();
+		} catch (ex) {
+			console.error(ex);
+			console.error("Could not find author name");
+		}
+		return null;
+	}
+
+	getAuthorHandle() {
+		try {
+			return $(this.postElement).find(".display-name__account").first().text();
+		} catch (ex) {
+			console.error(ex);
+			console.error("Could not find author handle");
+		}
+		return null;
+	}
+}
+
 class Parser {
 
 	/**
@@ -248,7 +279,7 @@ class Parser {
 	 * @returns {typeof Parser[]}
 	 */
 	static parsers() {
-		return [TwitterParser, BlueskyParser];
+		return [TwitterParser, MastodonParser, BlueskyParser];
 	}
 }
 
@@ -271,6 +302,31 @@ class TwitterParser extends Parser {
 		postContainers.each((index) => {
 			let postElement = postContainers[index];
 			let post = new TwitterPost(postElement);
+			posts.push(post);
+		});
+		return posts;
+	}
+}
+
+class MastodonParser extends Parser {
+
+	static id = "mastodon";
+	static parserName = "Mastodon";
+	static brandColor = "#efebff";
+
+	static appliesToPage() {
+		return $("body").children().first().attr("id") === "mastodon";
+	}
+
+	/**
+	 * @returns {Post[]}
+	 */
+	static getPosts() {
+		let postContainers = $(".status.status-public").filter('[' + PROCESSED_INDICATOR + '!="true"]');
+		let posts = [];
+		postContainers.each((index) => {
+			let postElement = postContainers[index];
+			let post = new MastodonPost(postElement);
 			posts.push(post);
 		});
 		return posts;

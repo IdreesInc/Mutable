@@ -1,0 +1,4 @@
+.mutable-blur {
+	filter: blur(10px) !important;
+	opacity: 0.5 !important;
+}
