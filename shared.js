@@ -233,7 +233,7 @@ class TwitterParser extends Parser {
 	 * @returns {Post[]}
 	 */
 	static getPosts() {
-		let postContainers = $(document).find('[data-testid^="tweet"][' + PROCESSED_INDICATOR + '!="true"]');
+		let postContainers = $(document).find('[data-testid="tweet"][' + PROCESSED_INDICATOR + '!="true"]');
 		let posts = [];
 		postContainers.each((index) => {
 			let postElement = postContainers[index];

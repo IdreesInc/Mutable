@@ -38,7 +38,9 @@ function initSettings() {
 }
 
 function renderSettings() {
+	twitterCheckbox.checked = !currentSettings.twitterDisabled;
 	blueskyCheckbox.checked = !currentSettings.blueskyDisabled;
+	
 	groupsContainer.innerHTML = "";
 	for (let group of currentSettings.getGroupsList()) {
 		let groupElement = document.createElement("div");

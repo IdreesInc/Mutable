@@ -52,6 +52,8 @@ function parse() {
 	log(`Found ${posts.length} posts`)
 	for (let post of posts) {
 		post.postElement.setAttribute(PROCESSED_INDICATOR, "true");
+		// console.log(post.authorHandle());
+		// console.log(post.authorName());
 		if (match(post)) {
 			hidePost(post.postElement);
 		}
