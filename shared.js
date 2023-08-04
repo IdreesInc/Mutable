@@ -320,9 +320,9 @@ class KeywordMute extends MutePattern {
 	 */
 	isMatch(contents) {
 		if (this.caseSensitive) {
-			return contents.includes(this.word);
+			return contents.split(" ").includes(this.word);
 		} else {
-			return contents.toLowerCase().includes(this.word.toLowerCase());
+			return contents.toLowerCase().split(" ").includes(this.word.toLowerCase());
 		}
 	}
 
@@ -334,9 +334,11 @@ class KeywordMute extends MutePattern {
 class Settings {
 	/**
 	 * @param {Object<string, Group>} [groups]
+	 * @param {boolean} [blueskyDisabled]
 	 */
-	constructor(groups) {
+	constructor(groups, blueskyDisabled = false) {
 		this.groups = groups ?? { "default": new Group("default", "Default Group", [])};
+		this.blueskyDisabled = blueskyDisabled;
 	}
 
 	/**
@@ -376,7 +378,12 @@ class Settings {
 			console.error("Default group was not found");
 			return null;
 		}
-		return new Settings(groups);
+		let blueskyDisabled = json.blueskyDisabled;
+		if (json.blueskyDisabled !== undefined && typeof json.blueskyDisabled !== "boolean") {
+			console.warn("Bluesky disabled is not a boolean: " + JSON.stringify(json.blueskyDisabled));
+			blueskyDisabled = undefined;
+		}
+		return new Settings(groups, blueskyDisabled);
 	}
 }
 
@@ -462,6 +469,22 @@ function putSettings(settings, onSuccess, onError) {
 			if (onSuccess) {
 				onSuccess();
 			}
+		}
+	});
+}
+
+/**
+ * Subscribe to changes in the settings.
+ * @param {(arg0: Settings) => void} callback
+ */
+function subscribeToSettings(callback) {
+	if (typeof chrome === "undefined") {
+		console.error("Chrome API not found");
+		return;
+	}
+	chrome.storage.onChanged.addListener((changes, areaName) => {
+		if (areaName === "sync" && changes["settings"]) {
+			getSettings(callback);
 		}
 	});
 }

@@ -4,6 +4,9 @@
 /** @type {HTMLElement} */
 // @ts-ignore
 const groupsContainer = document.getElementById("groups-container");
+/** @type {HTMLInputElement} */
+// @ts-ignore
+const blueskyCheckbox = document.getElementById("bluesky-checkbox");
 
 let currentSettings = new Settings();
 
@@ -12,13 +15,23 @@ init();
 function init() {
 	getSettings((result) => {
 		currentSettings = result;
+		initSettings();
 		renderSettings();
 	}, () => {
+		initSettings();
 		renderSettings();
 	});
 }
 
+function initSettings() {
+	blueskyCheckbox.addEventListener("change", () => {
+		currentSettings.blueskyDisabled = !blueskyCheckbox.checked;
+		updateSettings();
+	});
+}
+
 function renderSettings() {
+	blueskyCheckbox.checked = !currentSettings.blueskyDisabled;
 	groupsContainer.innerHTML = "";
 	for (let group of currentSettings.getGroupsList()) {
 		let groupElement = document.createElement("div");

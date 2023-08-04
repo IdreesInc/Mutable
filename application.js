@@ -12,10 +12,14 @@ function init() {
 	getSettings((result) => {
 		settings = result;
 	});
-	// Every 5 seconds, parse the page for new posts
+	subscribeToSettings((result) => {
+		log("Settings updated");
+		settings = result;
+	});
+	// Every second, parse the page for new posts
 	setInterval(() => {
 		parse();
-	}, 5000);
+	}, 1000);
 	// Also parse whenever the page is scrolled (but only once per second)
 	let scrollTimeout = null;
 	document.addEventListener("wheel", () => {
@@ -28,13 +32,14 @@ function init() {
 			parse();
 		}, 100);
 	});
+	parse();
 }
 
 /**
  * Parse the page for posts and hide any that match the mute patterns.
  */
 function parse() {
-	if (window.location.host === "bsky.app") {
+	if (window.location.host === "bsky.app" && !settings.blueskyDisabled) {
 		let posts = new BlueskyParser().getPosts();
 		log(`Found ${posts.length} posts`)
 		for (let post of posts) {
@@ -80,9 +85,10 @@ function match(post) {
  * @param {HTMLElement} element
  */
 function hidePost(element) {
-	element.style.filter = "blur(10px)";
+	const FILTER = "blur(10px)";
+	element.style.filter = FILTER;
 	element.addEventListener("click", function (event) {
-		if (element.style.filter === "blur(10px)") {
+		if (element.style.filter === FILTER) {
 			element.style.filter = "blur(0px)";
 			event.stopPropagation();
 		}
