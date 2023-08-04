@@ -4,12 +4,9 @@
 /** @type {HTMLElement} */
 // @ts-ignore
 const groupsContainer = document.getElementById("groups-container");
-/** @type {HTMLInputElement} */
+/** @type {HTMLElement} */
 // @ts-ignore
-const twitterCheckbox = document.getElementById("twitter-checkbox");
-/** @type {HTMLInputElement} */
-// @ts-ignore
-const blueskyCheckbox = document.getElementById("bluesky-checkbox");
+const websitesContent = document.getElementById("websites-content");
 
 let currentSettings = new Settings();
 
@@ -27,20 +24,52 @@ function init() {
 }
 
 function initSettings() {
-	twitterCheckbox.addEventListener("change", () => {
-		currentSettings.twitterDisabled = !twitterCheckbox.checked;
-		updateSettings();
-	});
-	blueskyCheckbox.addEventListener("change", () => {
-		currentSettings.blueskyDisabled = !blueskyCheckbox.checked;
-		updateSettings();
-	});
+	for (let parser of Parser.parsers()) {
+		let id = parser.id;
+		let name = parser.parserName;
+		let website = document.createElement("div");
+		website.classList.add("website");
+		// set element id
+		website.innerHTML = `
+			<div class="website-name">${name}</div>
+			<label class="toggle-switch">
+				<input id="${id}-checkbox" type="checkbox" checked>
+				<span class="toggle-inner"></span>
+			</label>
+		`;
+		website.style.background = `linear-gradient(90deg, ${parser.brandColor} 0%, white 80%)`;
+		websitesContent.appendChild(website);
+		/** @type {HTMLInputElement} */
+		// @ts-ignore
+		let checkbox = document.getElementById(`${id}-checkbox`);
+		checkbox.addEventListener("change", () => {
+			if (checkbox.checked) {
+				currentSettings.enableParser(id);
+			} else {
+				currentSettings.disableParser(id);
+			}
+			updateSettings();
+		});
+	}
+}
+
+/**
+ * @param {string} parserId
+ * @param {boolean} value
+ */
+function updateCheckbox(parserId, value) {
+	/** @type {HTMLInputElement|undefined} */
+	// @ts-ignore
+	let checkbox = document.getElementById(`${parserId}-checkbox`);
+	if (checkbox) {
+		checkbox.checked = value;
+	}
 }
 
 function renderSettings() {
-	twitterCheckbox.checked = !currentSettings.twitterDisabled;
-	blueskyCheckbox.checked = !currentSettings.blueskyDisabled;
-	
+	for (let parser of Parser.parsers()) {
+		updateCheckbox(parser.id, !currentSettings.isDisabled(parser.id));
+	}
 	groupsContainer.innerHTML = "";
 	for (let group of currentSettings.getGroupsList()) {
 		let groupElement = document.createElement("div");

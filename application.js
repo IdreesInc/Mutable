@@ -40,11 +40,10 @@ function init() {
  */
 function parse() {
 	let posts;
-	if (TwitterParser.appliesToPage() && !settings.twitterDisabled) {
-		posts = TwitterParser.getPosts();
-	}
-	if (BlueskyParser.appliesToPage() && !settings.blueskyDisabled) {
-		posts = BlueskyParser.getPosts();
+	for (let parser of Parser.parsers()) {
+		if (parser.appliesToPage() && !settings.isDisabled(parser.id)) {
+			posts = parser.getPosts();
+		}
 	}
 	if (!posts) {
 		return;

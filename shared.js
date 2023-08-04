@@ -205,6 +205,26 @@ class BlueskyPost extends Post {
 }
 
 class Parser {
+
+	/**
+	 * The unique id of the parser.
+	 * @abstract
+	 * @type {string}
+	 */
+	static id = "";
+	/**
+	 * The name of the parser.
+	 * @abstract
+	 * @type {string}
+	 */
+	static parserName = "";
+	/**
+	 * The washed-out color of the parser's branding.
+	 * @abstract
+	 * @type {string}
+	 */
+	static brandColor = "#000000";
+
 	/**
 	 * Whether this parser applies to the current page.
 	 * @abstract
@@ -222,9 +242,22 @@ class Parser {
 	static getPosts() {
 		throw "Not implemented";
 	}
+
+	/**
+	 * Get all parsers.
+	 * @returns {typeof Parser[]}
+	 */
+	static parsers() {
+		return [TwitterParser, BlueskyParser];
+	}
 }
 
 class TwitterParser extends Parser {
+
+	static id = "twitter";
+	static parserName = "Twitter/X";
+	static brandColor = "#DAF2FF";
+
 	static appliesToPage() {
 		return window.location.host === "twitter.com";
 	}
@@ -245,6 +278,11 @@ class TwitterParser extends Parser {
 }
 
 class BlueskyParser extends Parser {
+
+	static id = "bluesky";
+	static parserName = "Bluesky";
+	static brandColor = "#DAF8FF";
+
 	static appliesToPage() {
 		return window.location.host === "bsky.app";
 	}
@@ -404,13 +442,11 @@ class KeywordMute extends MutePattern {
 class Settings {
 	/**
 	 * @param {Object<string, Group>} [groups]
-	 * @param {boolean} [twitterDisabled]
-	 * @param {boolean} [blueskyDisabled]
+	 * @param {string[]} [disabledParsers]
 	 */
-	constructor(groups, twitterDisabled = false, blueskyDisabled = false) {
+	constructor(groups, disabledParsers) {
 		this.groups = groups ?? { "default": new Group("default", "Default Group", [])};
-		this.twitterDisabled = twitterDisabled;
-		this.blueskyDisabled = blueskyDisabled;
+		this.disabledParsers = disabledParsers ?? [];
 	}
 
 	/**
@@ -419,6 +455,29 @@ class Settings {
 	 */
 	getGroupsList() {
 		return Object.values(this.groups);
+	}
+
+	/**
+	 * @param {string} parserId
+	 */
+	disableParser(parserId) {
+		if (!this.disabledParsers.includes(parserId)) {
+			this.disabledParsers.push(parserId);
+		}
+	}
+
+	/**
+	 * @param {string} parserId
+	 */
+	enableParser(parserId) {
+		this.disabledParsers = this.disabledParsers.filter((id) => id !== parserId);
+	}
+
+	/**
+	 * @param {string} parserId
+	 */
+	isDisabled(parserId) {
+		return this.disabledParsers.includes(parserId);
 	}
 
 	/**
@@ -450,17 +509,12 @@ class Settings {
 			console.error("Default group was not found");
 			return null;
 		}
-		let twitterDisabled = json.twitterDisabled;
-		if (json.twitterDisabled !== undefined && typeof json.twitterDisabled !== "boolean") {
-			console.warn("Twitter disabled is not a boolean: " + JSON.stringify(json.twitterDisabled));
-			twitterDisabled = undefined;
+		let disabledParsers = json.disabledParsers;
+		if (disabledParsers === undefined || !Array.isArray(disabledParsers)) {
+			console.error("Missing or invalid disabledParsers property: " + JSON.stringify(json));
+			return null;
 		}
-		let blueskyDisabled = json.blueskyDisabled;
-		if (json.blueskyDisabled !== undefined && typeof json.blueskyDisabled !== "boolean") {
-			console.warn("Bluesky disabled is not a boolean: " + JSON.stringify(json.blueskyDisabled));
-			blueskyDisabled = undefined;
-		}
-		return new Settings(groups, twitterDisabled, blueskyDisabled);
+		return new Settings(groups, disabledParsers);
 	}
 }
 
