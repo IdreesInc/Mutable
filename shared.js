@@ -114,6 +114,42 @@ class Post {
 	}
 }
 
+class TwitterPost extends Post {
+	getPostText() {
+		return this.postElement.innerText;
+	}
+
+	getPostContents() {
+		const text = this.postText();
+		return text === null ? null : text.replace(this.authorName() ?? "", "").replace(this.authorHandle() ?? "", "");
+	}
+
+	getAuthorName() {
+		try {
+			const usernameElement = $(this.postElement).find('[data-testid="User-Name"]');
+			return usernameElement.first().text().split("@")[0].trim();
+		} catch (ex) {
+			console.error(ex);
+			console.error("Could not find author name");
+		}
+		return null;
+	}
+
+	getAuthorHandle() {
+		try {
+			const usernameElement = $(this.postElement).find('[data-testid="User-Name"]');
+			const authorHandleElement = usernameElement.find("span").filter(function () {
+				return $(this).text().trim().startsWith("@");
+			}).first();
+			return authorHandleElement.text();
+		} catch (ex) {
+			console.error(ex);
+			console.error("Could not find author handle");
+		}
+		return null;
+	}
+}
+
 class BlueskyPost extends Post {
 	getPostText() {
 		return this.postElement.innerText;
@@ -145,7 +181,7 @@ class BlueskyPost extends Post {
 			return authorHandleElement.text();
 		} catch (ex) {
 			console.error(ex);
-			console.error("Could not find author name");
+			console.error("Could not find author handle");
 		}
 		return null;
 	}
@@ -170,19 +206,53 @@ class BlueskyPost extends Post {
 
 class Parser {
 	/**
+	 * Whether this parser applies to the current page.
+	 * @abstract
+	 * @returns {boolean}
+	 */
+	static appliesToPage() {
+		throw "Not implemented";
+	}
+
+	/**
 	 * Get all posts on the page.
+	 * @abstract
 	 * @returns {Post[]}
 	 */
-	getPosts() {
+	static getPosts() {
 		throw "Not implemented";
 	}
 }
 
-class BlueskyParser extends Parser {
+class TwitterParser extends Parser {
+	static appliesToPage() {
+		return window.location.host === "twitter.com";
+	}
+
 	/**
 	 * @returns {Post[]}
 	 */
-	getPosts() {
+	static getPosts() {
+		let postContainers = $(document).find('[data-testid^="tweet"][' + PROCESSED_INDICATOR + '!="true"]');
+		let posts = [];
+		postContainers.each((index) => {
+			let postElement = postContainers[index];
+			let post = new TwitterPost(postElement);
+			posts.push(post);
+		});
+		return posts;
+	}
+}
+
+class BlueskyParser extends Parser {
+	static appliesToPage() {
+		return window.location.host === "bsky.app";
+	}
+
+	/**
+	 * @returns {Post[]}
+	 */
+	static getPosts() {
 		let postContainers = $(document).find('[data-testid^="feedItem"][' + PROCESSED_INDICATOR + '!="true"]');
 		let posts = [];
 		postContainers.each((index) => {
@@ -334,10 +404,12 @@ class KeywordMute extends MutePattern {
 class Settings {
 	/**
 	 * @param {Object<string, Group>} [groups]
+	 * @param {boolean} [twitterDisabled]
 	 * @param {boolean} [blueskyDisabled]
 	 */
-	constructor(groups, blueskyDisabled = false) {
+	constructor(groups, twitterDisabled = false, blueskyDisabled = false) {
 		this.groups = groups ?? { "default": new Group("default", "Default Group", [])};
+		this.twitterDisabled = twitterDisabled;
 		this.blueskyDisabled = blueskyDisabled;
 	}
 
@@ -378,12 +450,17 @@ class Settings {
 			console.error("Default group was not found");
 			return null;
 		}
+		let twitterDisabled = json.twitterDisabled;
+		if (json.twitterDisabled !== undefined && typeof json.twitterDisabled !== "boolean") {
+			console.warn("Twitter disabled is not a boolean: " + JSON.stringify(json.twitterDisabled));
+			twitterDisabled = undefined;
+		}
 		let blueskyDisabled = json.blueskyDisabled;
 		if (json.blueskyDisabled !== undefined && typeof json.blueskyDisabled !== "boolean") {
 			console.warn("Bluesky disabled is not a boolean: " + JSON.stringify(json.blueskyDisabled));
 			blueskyDisabled = undefined;
 		}
-		return new Settings(groups, blueskyDisabled);
+		return new Settings(groups, twitterDisabled, blueskyDisabled);
 	}
 }
 

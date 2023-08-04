@@ -6,6 +6,9 @@
 const groupsContainer = document.getElementById("groups-container");
 /** @type {HTMLInputElement} */
 // @ts-ignore
+const twitterCheckbox = document.getElementById("twitter-checkbox");
+/** @type {HTMLInputElement} */
+// @ts-ignore
 const blueskyCheckbox = document.getElementById("bluesky-checkbox");
 
 let currentSettings = new Settings();
@@ -24,6 +27,10 @@ function init() {
 }
 
 function initSettings() {
+	twitterCheckbox.addEventListener("change", () => {
+		currentSettings.twitterDisabled = !twitterCheckbox.checked;
+		updateSettings();
+	});
 	blueskyCheckbox.addEventListener("change", () => {
 		currentSettings.blueskyDisabled = !blueskyCheckbox.checked;
 		updateSettings();

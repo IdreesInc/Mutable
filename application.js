@@ -39,14 +39,21 @@ function init() {
  * Parse the page for posts and hide any that match the mute patterns.
  */
 function parse() {
-	if (window.location.host === "bsky.app" && !settings.blueskyDisabled) {
-		let posts = new BlueskyParser().getPosts();
-		log(`Found ${posts.length} posts`)
-		for (let post of posts) {
-			post.postElement.setAttribute(PROCESSED_INDICATOR, "true");
-			if (match(post)) {
-				hidePost(post.postElement);
-			}
+	let posts;
+	if (TwitterParser.appliesToPage() && !settings.twitterDisabled) {
+		posts = TwitterParser.getPosts();
+	}
+	if (BlueskyParser.appliesToPage() && !settings.blueskyDisabled) {
+		posts = BlueskyParser.getPosts();
+	}
+	if (!posts) {
+		return;
+	}
+	log(`Found ${posts.length} posts`)
+	for (let post of posts) {
+		post.postElement.setAttribute(PROCESSED_INDICATOR, "true");
+		if (match(post)) {
+			hidePost(post.postElement);
 		}
 	}
 }
