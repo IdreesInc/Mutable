@@ -316,3 +316,95 @@ input:checked + .toggle-inner:before {
 	font-size: 18px;
 	margin-left: 6px;
 }
+
+#modal-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	padding: 0 8% 0 8%;
+	box-sizing: border-box;
+	background: rgba(0,0,0,0.1);
+	backdrop-filter: blur(5px);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	display: none;
+}
+
+#add-word-modal > .window-top-bar {
+	background: linear-gradient(180deg, #dcd0ff 0%, #FFF 100%);
+}
+
+.settings-text-input, .settings-block {
+	width: 100%;
+	min-height: 32px;
+	margin-top: 12px;
+	border: var(--light-stroke) solid black;
+	box-sizing: border-box;
+	font-family: Epilogue;
+	font-size: 16px;
+}
+
+.settings-text-input {
+	padding-left: 10px;
+}
+
+.settings-block {
+	padding-left: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.settings-toggle {
+	height: 20px;
+	margin-right: 5px;
+	border-width: var(--light-stroke);
+}
+
+.settings-toggle-inner::before {
+	height: 23px;
+	border-width: var(--light-stroke);
+	bottom: calc(-1 * var(--light-stroke));
+}
+
+.keyword-input {
+	border-radius: 5px 5px 0 0;
+}
+
+.button-block {
+	width: 100%;
+	display: flex;
+	margin-top: 12px;
+}
+
+.submit-button, .cancel-button {
+	/* width: 105px; */
+	height: 32px;
+	flex-grow: 1;
+	border: var(--light-stroke) solid #000;
+	background: #F9F9F9;
+	box-shadow: 1px 1px 0px 0px #000;
+	padding: 2px;
+	padding-left: 2px;
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	user-select: none;
+}
+
+.submit-button {
+	border-radius: 0 8px 8px 8px;
+	background: linear-gradient(180deg, #e1fdff 0%, rgba(249, 249, 249, 0.00) 100%);
+}
+
+.cancel-button {
+	margin-left: 5px;
+	border-radius: 8px 0 8px 8px;
+	background: linear-gradient(180deg, #ffe6e6 0%, rgba(249, 249, 249, 0.00) 100%); 
+}

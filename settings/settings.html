@@ -102,6 +102,43 @@
 					</div>
 				</div>
 			</div>
+		<div id="modal-container">
+			<div id="add-word-modal" class="window">
+				<div class="window-top-bar">
+					<div class="window-icon">
+						<svg width="25" height="25" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="M9.16666 4.16667L5 7.5H1.66666V12.5H5L9.16666 15.8333V4.16667Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="M19.1667 7.5L14.1667 12.5" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="M14.1667 7.5L19.1667 12.5" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+						  </svg>
+					</div>
+					<div class="window-title">mute a word</div>
+					<div class="window-controls">
+						<div class="window-button left-window-button"></div>
+						<div class="window-button right-window-button"></div>
+					</div>
+				</div>
+				<div class="window-content">
+					Type in the word or phrase that you wish to mute:
+					<input id="add-word-input" class="settings-text-input keyword-input" type="text" placeholder="eg. tulips">
+					<div class="settings-block">
+						case sensitive
+						<label class="toggle-switch settings-toggle">
+							<input id="add-word-case-sensitive" type="checkbox">
+							<span class="toggle-inner settings-toggle-inner"></span>
+						</label>
+					</div>
+					<div class="button-block">
+						<div id="add-word-submit" class="submit-button">
+							add to mute list
+						</div>
+						<div id="add-word-cancel" class="cancel-button">
+							nevermind
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 		</div>
 		<script src="../shared.js"></script>
 		<script src="settings.js"></script>

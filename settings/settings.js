@@ -10,6 +10,26 @@ const websitesContent = document.getElementById("websites-content");
 /** @type {HTMLElement} */
 // @ts-ignore
 const background = document.getElementById("background");
+/** @type {HTMLElement} */
+// @ts-ignore
+const modalContainer = document.getElementById("modal-container");
+/** @type {HTMLElement} */
+// @ts-ignore
+const addWordModal = document.getElementById("add-word-modal");
+/** @type {HTMLInputElement} */
+// @ts-ignore
+const addWordInput = document.getElementById("add-word-input");
+/** @type {HTMLInputElement} */
+// @ts-ignore
+const addWordCaseSensitive = document.getElementById("add-word-case-sensitive");
+/** @type {HTMLElement} */
+// @ts-ignore
+const addWordSubmit = document.getElementById("add-word-submit");
+/** @type {((keyword: string, caseSensitive: boolean) => void)} */
+let addWordSubmitCallback = () => {};
+/** @type {HTMLElement} */
+// @ts-ignore
+const addWordCancel = document.getElementById("add-word-cancel");
 
 let currentSettings = new Settings();
 
@@ -37,12 +57,45 @@ function init() {
 		mouseRatio = event.clientY / window.innerHeight;
 		updateFoil(scrollRatio, mouseRatio);
 	});
+	initModals();
 }
 
 function updateFoil(scrollRatio, mouseRatio) {
 	let ratio = scrollRatio * 0.5 + mouseRatio * 0.5;
 	background.style.backgroundPositionX  = `${ratio * 80}%`;
 	// TODO: Accredit kjpargeter
+}
+
+function initModals() {
+	addWordCancel.addEventListener("click", () => {
+		hideModals();
+	});
+	addWordSubmit.addEventListener("click", () => {
+		let keyword = addWordInput.value;
+		if (!keyword) {
+			alert("Please enter a keyword");
+			return;
+		}
+		hideModals();
+		addWordSubmitCallback(keyword, addWordCaseSensitive.checked);
+	});
+}
+
+/**
+ * @param {((keyword: string, caseSensitive: boolean) => void)} submitCallback
+ */
+function displayAddWordModal(submitCallback) {
+	addWordInput.value = "";
+	addWordCaseSensitive.checked = false;
+	addWordSubmitCallback = submitCallback;
+
+	addWordModal.style.display = "";
+	modalContainer.style.display = "flex";
+}
+
+function hideModals() {
+	addWordModal.style.display = "none";
+	modalContainer.style.display = "none";
 }
 
 function initSettings() {
@@ -126,12 +179,13 @@ function renderSettings() {
 			<div class="add-button-plus">+</div>
 		`;
 		addButton.addEventListener("click", () => {
-			let keyword = prompt("Enter a keyword to mute");
-			if (!keyword) {
-				return;
-			}
-			group.addPattern(new KeywordMute(uuid(), keyword, false));
-			updateSettings();
+			displayAddWordModal((keyword, caseSensitive) => {
+				if (keyword.trim().length === 0) {
+					return;
+				}
+				group.addPattern(new KeywordMute(uuid(), keyword, caseSensitive));
+				updateSettings();
+			});
 		});
 		groupContent.appendChild(addButton);
 		groupElement.appendChild(groupContent);
