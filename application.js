@@ -60,8 +60,9 @@ function parse() {
 		// console.log(post.authorHandle());
 		// console.log(post.authorName());
 		// console.log(post.postContents());
-		if (match(post)) {
-			hidePost(post.postElement);
+		let matchText = match(post);
+		if (matchText !== null) {
+			hidePost(post.postElement, matchText);
 		}
 	}
 }
@@ -69,6 +70,7 @@ function parse() {
 /**
  * Determine whether the provided post matches any of the mute patterns.
  * @param {Post} post The post to check
+ * @returns {string|null} The pattern that matched, or null if no pattern matched
  */
 function match(post) {
 	const contents = post.postContents();
@@ -77,7 +79,7 @@ function match(post) {
 		for (let group of groups) {
 			for (let pattern of group.patterns) {
 				if (pattern.isMatch(contents)) {
-					return true;
+					return pattern.plaintext();
 				}
 			}
 		}
@@ -88,23 +90,34 @@ function match(post) {
 			for (let group of groups) {
 				for (let pattern of group.patterns) {
 					if (pattern.isMatch(altText)) {
-						return true;
+						return pattern.plaintext();
 					}
 				}
 			}
 		}
 	}
+	return null;
 }
 
 /**
  * @param {HTMLElement} element
+ * @param {string} reason
  */
-function hidePost(element) {
+function hidePost(element, reason) {
 	if (settings.globalMuteAction === "blur") {
 		element.classList.add("mutable-blur");
 		element.addEventListener("click", function (event) {
 			if (element.classList.contains("mutable-blur")) {
 				element.classList.remove("mutable-blur");
+				event.stopPropagation();
+			}
+		});
+	} else if (settings.globalMuteAction === "blur-preview") {
+		element.classList.add("mutable-blur-explanation");
+		element.setAttribute("data-mutable-match", reason);
+		element.addEventListener("click", function (event) {
+			if (element.classList.contains("mutable-blur-explanation")) {
+				element.classList.remove("mutable-blur-explanation");
 				event.stopPropagation();
 			}
 		});
@@ -130,6 +143,7 @@ function resetPosts() {
 		post.removeAttribute(PROCESSED_INDICATOR);
 		post.classList.remove("mutable-blur");
 		post.classList.remove("mutable-hide");
+		post.classList.remove("mutable-blur-explanation");
 	}
 }
 

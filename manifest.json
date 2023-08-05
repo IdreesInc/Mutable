@@ -1,12 +1,12 @@
 {
-	"description": "Makes the web mutable",
+	"description": "Mute keywords across multiple social media sites at once.",
 	"manifest_version": 3,
 	"name": "Mutable",
 	"version": "1.0",
 	"homepage_url": "https://idreesinc.com",
 	"icons": {
-		"48": "icons/icon-48.png",
-		"96": "icons/icon-96.png"
+		"48": "icons/icon-foil.png",
+		"96": "icons/icon-foil.png"
 	},
 	"content_scripts": [
 	  {

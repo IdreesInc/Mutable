@@ -1,7 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500&display=swap');
+
 .mutable-blur {
 	filter: blur(10px) !important;
 	opacity: 0.5 !important;
 }
+
+.mutable-blur > * {
+	pointer-events: none !important;
+}
+
+.mutable-blur-explanation {
+}
+
+.mutable-blur-explanation::after {
+	text-align: center;
+	content: 'Muted by Mutable\A Contains: "' attr(data-mutable-match) '"';
+	white-space: pre-wrap;
+	box-sizing: border-box;
+	font-size: 16px;
+	color: white;
+	font-family: "Epilogue", sans-serif;
+	position: absolute;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-image: url("./settings/foil.jpg");
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	backdrop-filter: blur(10px) brightness(60%) !important;
+	--webkit-backdrop-filter: blur(10px) brightness(60%) !important;
+}
+
 
 .mutable-hide {
 	display: none !important;
