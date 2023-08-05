@@ -420,3 +420,50 @@ input:checked + .toggle-inner:before {
 	justify-content: center;
 	align-items: center;
 }
+
+#settings-window > .window-top-bar {
+	background: linear-gradient(180deg, #BCE7FF 0%, #FFF 100%);
+}
+
+/* first child  */
+
+#settings-window-content > .settings-block:first-child {
+	margin-top: 0px;
+}
+
+.global-settings-block {
+	font-size: 12.5px;
+}
+
+.settings-text {
+	padding-top: 2px;
+	box-sizing: border-box;
+}
+
+.settings-select {
+	height: 24px;
+	font-size: 12.5px;
+	border-radius: 100px;
+	border: var(--light-stroke) solid #000;
+	background: #EAFEFF;
+	padding-left: 10px;
+	padding-right: 19px;
+	margin-right: 3px;
+	box-sizing: border-box;
+	appearance: none;
+}
+
+.select-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.select-container:after {
+	width: 0;
+	content: "▼";
+	font-size: 8px;
+	transform: translateX(-20px);
+	margin-top: 1px;
+	pointer-events: none;
+}

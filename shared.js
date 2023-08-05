@@ -1,5 +1,7 @@
 // @ts-check
 
+const PROCESSED_INDICATOR = "mutable-parsed";
+
 /**
  * An abstract class representing a post on a content feed.
  * This class is designed to lazy-load the parsed elements of the post only when requested and cache the values.
@@ -499,10 +501,12 @@ class Settings {
 	/**
 	 * @param {Object<string, Group>} [groups]
 	 * @param {string[]} [disabledParsers]
+	 * @param {string} [globalMuteAction]
 	 */
-	constructor(groups, disabledParsers) {
+	constructor(groups, disabledParsers, globalMuteAction="blur") {
 		this.groups = groups ?? { "default": new Group("default", "Default Group", [])};
 		this.disabledParsers = disabledParsers ?? [];
+		this.globalMuteAction = globalMuteAction;
 	}
 
 	/**
@@ -570,7 +574,12 @@ class Settings {
 			console.error("Missing or invalid disabledParsers property: " + JSON.stringify(json));
 			return null;
 		}
-		return new Settings(groups, disabledParsers);
+		let globalMuteAction = json.globalMuteAction;
+		if (globalMuteAction === undefined || typeof globalMuteAction !== "string") {
+			console.warn("Missing or invalid globalMuteAction property: " + JSON.stringify(json));
+			globalMuteAction = undefined;
+		}
+		return new Settings(groups, disabledParsers, globalMuteAction);
 	}
 }
 
@@ -586,7 +595,7 @@ function getSerializedSettings() {
 	return new Promise((resolve, reject) => {
 		chrome.storage.sync.get("settings", function (result) {
 			if (chrome.runtime.lastError) {
-				error(chrome.runtime.lastError);
+				console.error(chrome.runtime.lastError);
 				reject(chrome.runtime.lastError);
 			} else {
 				resolve(result.settings);

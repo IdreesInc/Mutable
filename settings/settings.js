@@ -30,6 +30,9 @@ let addWordSubmitCallback = () => {};
 /** @type {HTMLElement} */
 // @ts-ignore
 const addWordCancel = document.getElementById("add-word-cancel");
+/** @type {HTMLSelectElement} */
+// @ts-ignore
+const globalMuteAction = document.getElementById("global-mute-action");
 
 let currentSettings = new Settings();
 
@@ -66,43 +69,6 @@ function updateFoil(scrollRatio, mouseRatio) {
 	// TODO: Accredit kjpargeter
 }
 
-function initModals() {
-	addWordCancel.addEventListener("click", () => {
-		hideModals();
-	});
-	addWordSubmit.addEventListener("click", () => {
-		let keyword = addWordInput.value;
-		if (!keyword) {
-			alert("Please enter a keyword");
-			return;
-		}
-		hideModals();
-		addWordSubmitCallback(keyword, addWordCaseSensitive.checked);
-	});
-	// Get the nested child of class window-controls from addWordModal
-	let windowControls = addWordModal.getElementsByClassName("window-controls")[0];
-	windowControls.addEventListener("click", () => {
-		hideModals();
-	});
-}
-
-/**
- * @param {((keyword: string, caseSensitive: boolean) => void)} submitCallback
- */
-function displayAddWordModal(submitCallback) {
-	addWordInput.value = "";
-	addWordCaseSensitive.checked = false;
-	addWordSubmitCallback = submitCallback;
-
-	addWordModal.style.display = "";
-	modalContainer.style.display = "flex";
-}
-
-function hideModals() {
-	addWordModal.style.display = "none";
-	modalContainer.style.display = "none";
-}
-
 function initSettings() {
 	for (let parser of Parser.parsers()) {
 		let id = parser.id;
@@ -131,6 +97,11 @@ function initSettings() {
 			updateSettings();
 		});
 	}
+	globalMuteAction.value = currentSettings.globalMuteAction;
+	globalMuteAction.addEventListener("change", () => {
+		currentSettings.globalMuteAction = globalMuteAction.value;
+		updateSettings();
+	});
 }
 
 /**
@@ -205,4 +176,44 @@ function updateSettings() {
 	putSettings(currentSettings, () => {
 		renderSettings();
 	});
+}
+
+
+function initModals() {
+	addWordCancel.addEventListener("click", () => {
+		hideModals();
+	});
+	addWordSubmit.addEventListener("click", () => {
+		let keyword = addWordInput.value;
+		if (!keyword) {
+			alert("Please enter a keyword");
+			return;
+		}
+		hideModals();
+		addWordSubmitCallback(keyword, addWordCaseSensitive.checked);
+	});
+	// Get the nested child of class window-controls from addWordModal
+	let windowControls = addWordModal.getElementsByClassName("window-controls")[0];
+	windowControls.addEventListener("click", () => {
+		hideModals();
+	});
+}
+
+/**
+ * @param {((keyword: string, caseSensitive: boolean) => void)} submitCallback
+ */
+function displayAddWordModal(submitCallback) {
+	addWordInput.value = "";
+	addWordCaseSensitive.checked = false;
+	addWordSubmitCallback = submitCallback;
+
+	addWordModal.style.display = "";
+	modalContainer.style.display = "flex";
+
+	addWordInput.focus();
+}
+
+function hideModals() {
+	addWordModal.style.display = "none";
+	modalContainer.style.display = "none";
 }

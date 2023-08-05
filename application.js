@@ -1,7 +1,6 @@
 // @ts-check
 /// <reference path="shared.js" />
 
-const PROCESSED_INDICATOR = "mutable-parsed";
 /** @type {Settings} */
 let settings = new Settings();
 
@@ -17,6 +16,7 @@ function init() {
 	});
 	subscribeToSettings((result) => {
 		log("Settings updated");
+		resetPosts();
 		settings = result;
 	});
 }
@@ -100,13 +100,37 @@ function match(post) {
  * @param {HTMLElement} element
  */
 function hidePost(element) {
-	element.classList.add("mutable-blur");
-	element.addEventListener("click", function (event) {
-		if (element.classList.contains("mutable-blur")) {
-			element.classList.remove("mutable-blur");
-			event.stopPropagation();
-		}
-	});
+	if (settings.globalMuteAction === "blur") {
+		element.classList.add("mutable-blur");
+		element.addEventListener("click", function (event) {
+			if (element.classList.contains("mutable-blur")) {
+				element.classList.remove("mutable-blur");
+				event.stopPropagation();
+			}
+		});
+	} else if (settings.globalMuteAction === "hide") {
+		element.classList.add("mutable-hide");
+	} else {
+		console.error(`Unknown global mute action, defaulting to 'blur': ${settings.globalMuteAction}`);
+		element.classList.add("mutable-blur");
+		element.addEventListener("click", function (event) {
+			if (element.classList.contains("mutable-blur")) {
+				element.classList.remove("mutable-blur");
+				event.stopPropagation();
+			}
+		});
+	}
+}
+
+/**
+ * Reset all posts that have been hidden by Mutable.
+ */
+function resetPosts() {
+	for (let post of document.querySelectorAll(`[${PROCESSED_INDICATOR}]`)) {
+		post.removeAttribute(PROCESSED_INDICATOR);
+		post.classList.remove("mutable-blur");
+		post.classList.remove("mutable-hide");
+	}
 }
 
 /**
