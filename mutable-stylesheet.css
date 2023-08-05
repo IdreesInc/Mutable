@@ -37,6 +37,7 @@
 	-webkit-text-fill-color: transparent;
 	backdrop-filter: blur(10px) brightness(60%) !important;
 	--webkit-backdrop-filter: blur(10px) brightness(60%) !important;
+	z-index: 1;
 }
 
 

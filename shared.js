@@ -486,9 +486,13 @@ class KeywordMute extends MutePattern {
 	 */
 	isMatch(contents) {
 		if (this.caseSensitive) {
-			return contents.split(" ").includes(this.word);
+			// Case-sensitive match
+			let regex = new RegExp(`\\b${this.word}\\b`);
+			return regex.test(contents);
 		} else {
-			return contents.toLowerCase().split(" ").includes(this.word.toLowerCase());
+			// Case-insensitive match
+			let regex = new RegExp(`\\b${this.word}\\b`, "i");
+			return regex.test(contents);
 		}
 	}
 
