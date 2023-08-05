@@ -79,6 +79,11 @@ function initModals() {
 		hideModals();
 		addWordSubmitCallback(keyword, addWordCaseSensitive.checked);
 	});
+	// Get the nested child of class window-controls from addWordModal
+	let windowControls = addWordModal.getElementsByClassName("window-controls")[0];
+	windowControls.addEventListener("click", () => {
+		hideModals();
+	});
 }
 
 /**
@@ -178,6 +183,9 @@ function renderSettings() {
 			<div class="add-button-text">add word</div>
 			<div class="add-button-plus">+</div>
 		`;
+		if (group.patterns.length === 0) {
+			addButton.classList.add("add-button-empty");
+		}
 		addButton.addEventListener("click", () => {
 			displayAddWordModal((keyword, caseSensitive) => {
 				if (keyword.trim().length === 0) {

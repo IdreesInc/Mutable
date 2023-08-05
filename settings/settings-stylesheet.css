@@ -317,6 +317,10 @@ input:checked + .toggle-inner:before {
 	margin-left: 6px;
 }
 
+.add-button-empty {
+	margin-top: 7px;
+}
+
 #modal-container {
 	position: fixed;
 	top: 0;
