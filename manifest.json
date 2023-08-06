@@ -1,12 +1,13 @@
 {
-	"description": "Mute keywords across multiple social media sites at once.",
 	"manifest_version": 3,
 	"name": "Mutable",
+	"description": "Mute keywords across multiple social media sites at once.",
 	"version": "1.0",
 	"homepage_url": "https://idreesinc.com",
 	"icons": {
 		"48": "icons/icon-foil.png",
-		"96": "icons/icon-foil.png"
+		"96": "icons/icon-foil.png",
+		"128": "icons/icon-foil.png"
 	},
 	"content_scripts": [
 	  {

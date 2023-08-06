@@ -237,6 +237,27 @@ class MastodonPost extends Post {
 	}
 }
 
+class RedditPost extends Post {
+	getPostText() {
+		return this.postElement.innerText;
+	}
+
+	getPostContents() {
+		const text = this.postText();
+		return text === null ? null : text.replace(this.authorName() ?? "", "").replace(this.authorHandle() ?? "", "");
+	}
+
+	getAuthorHandle() {
+		try {
+			return $(this.postElement).find('[data-testid="post_author_link"]').text();
+		} catch (ex) {
+			console.error(ex);
+			console.error("Could not find author handle");
+		}
+		return null;
+	}
+}
+
 class Parser {
 
 	/**
@@ -281,7 +302,7 @@ class Parser {
 	 * @returns {typeof Parser[]}
 	 */
 	static parsers() {
-		return [TwitterParser, MastodonParser, BlueskyParser];
+		return [TwitterParser, RedditParser, MastodonParser, BlueskyParser];
 	}
 }
 
@@ -299,7 +320,7 @@ class TwitterParser extends Parser {
 	 * @returns {Post[]}
 	 */
 	static getPosts() {
-		let postContainers = $(document).find('[data-testid="tweet"][' + PROCESSED_INDICATOR + '!="true"]');
+		let postContainers = $(document).find('[data-testid="tweet"]').parent().filter('[' + PROCESSED_INDICATOR + '!="true"]');
 		let posts = [];
 		postContainers.each((index) => {
 			let postElement = postContainers[index];
@@ -357,6 +378,42 @@ class BlueskyParser extends Parser {
 			posts.push(post);
 		});
 		return posts;
+	}
+}
+
+class RedditParser extends Parser {
+
+	static id = "reddit";
+	static parserName = "Reddit";
+	static brandColor = "#fff0df";
+
+	static appliesToPage() {
+		return window.location.host === "www.reddit.com" || window.location.host === "old.reddit.com";
+	}
+
+	/**
+	 * @returns {Post[]}
+	 */
+	static getPosts() {
+		if (window.location.host === "old.reddit.com") {
+			let postContainers = $(document).find('[' + PROCESSED_INDICATOR + '!="true"].thing');
+			let posts = [];
+			postContainers.each((index) => {
+				let postElement = postContainers[index];
+				let post = new RedditPost(postElement);
+				posts.push(post);
+			});
+			return posts;
+		} else {
+			let postContainers = $(document).find('[data-testid="post-container"][' + PROCESSED_INDICATOR + '!="true"]');
+			let posts = [];
+			postContainers.each((index) => {
+				let postElement = postContainers[index];
+				let post = new RedditPost(postElement);
+				posts.push(post);
+			});
+			return posts;
+		}
 	}
 }
 
