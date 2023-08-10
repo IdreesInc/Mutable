@@ -165,6 +165,88 @@ const puppies = [
 		"src": "https://unsplash.com/photos/VQPD1fc_Y8g"
 	}
 ];
+const hedgehogs = [
+	{
+		"name": "1",
+		"src": "https://unsplash.com/photos/D09Nooc3XQw"
+	},
+	{
+		"name": "2",
+		"src": "https://unsplash.com/photos/OMCgkp1oZ3Q"
+	},
+	{
+		"name": "3",
+		"src": "https://unsplash.com/photos/aM7r5lqKhiY"
+	},
+	{
+		"name": "4",
+		"src": "https://unsplash.com/photos/eHMLxD3W_m4"
+	},
+	{
+		"name": "5",
+		"src": "https://unsplash.com/photos/8wkkhqEYN0A"
+	},
+	{
+		"name": "6",
+		"src": "https://unsplash.com/photos/k_E7DpVgftw"
+	},
+	{
+		"name": "7",
+		"src": "https://unsplash.com/photos/iJ9o00UeAWk"
+	},
+	{
+		"name": "8",
+		"src": "https://unsplash.com/photos/GXMr7BadXQo"
+	},
+	{
+		"name": "9",
+		"src": "https://unsplash.com/photos/dktikEL51dM"
+	},
+	{
+		"name": "10",
+		"src": "https://unsplash.com/photos/g5tj75PJ4w4"
+	},
+	{
+		"name": "11",
+		"src": "https://unsplash.com/photos/MrCsc_ZL5dU"
+	},
+	{
+		"name": "12",
+		"src": "https://unsplash.com/photos/QWELA5fl1KY"
+	},
+	{
+		"name": "13",
+		"src": "https://unsplash.com/photos/6apx2KP_SEo"
+	},
+	{
+		"name": "14",
+		"src": "https://unsplash.com/photos/zjHbH8vkhgk"
+	},
+	{
+		"name": "15",
+		"src": "https://unsplash.com/photos/S6BR5GOqB4A"
+	},
+	{
+		"name": "16",
+		"src": "https://unsplash.com/photos/60QYdXjUd8o"
+	},
+	{
+		"name": "17",
+		"src": "https://unsplash.com/photos/lO9UKYIbV_g"
+	},
+	{
+		"name": "18",
+		"src": "https://unsplash.com/photos/qbFyc2w9q90"
+	},
+	{
+		"name": "19",
+		"src": "https://unsplash.com/photos/jczICIeZtos"
+	},
+	{
+		"name": "20",
+		"src": "https://unsplash.com/photos/JnZWFenBmx0"
+	}
+];
 
 /** @type {Settings} */
 let settings = new Settings();
@@ -304,6 +386,17 @@ function hidePost(element, reason) {
 		element.classList.add("mutable-image-overlay");
 		const puppySrc = `./images/puppies/${puppies[getIndexFromBag(puppies.length)].name}.jpg`;
 		element.style.setProperty("--overlay-image", `url("${puppySrc}")`);
+		element.addEventListener("click", function (event) {
+			if (element.classList.contains("mutable-image-overlay")) {
+				element.classList.remove("mutable-image-overlay");
+				element.style.setProperty("--overlay-image", "");
+				event.stopPropagation();
+			}
+		});
+	} else if (settings.globalMuteAction === "hedgehogs") {
+		element.classList.add("mutable-image-overlay");
+		const hedgehogSrc = `./images/hedgehogs/${hedgehogs[getIndexFromBag(hedgehogs.length)].name}.jpg`;
+		element.style.setProperty("--overlay-image", `url("${hedgehogSrc}")`);
 		element.addEventListener("click", function (event) {
 			if (element.classList.contains("mutable-image-overlay")) {
 				element.classList.remove("mutable-image-overlay");
