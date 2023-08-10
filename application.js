@@ -1,8 +1,92 @@
 // @ts-check
 /// <reference path="shared.js" />
 
+const kittens = [
+	{
+		"name": "1",
+		"src": "https://unsplash.com/photos/Y0WXj3xqJz0"
+	},
+	{
+		"name": "2",
+		"src": "https://unsplash.com/photos/WNoYQaAtCfo"
+	},
+	{
+		"name": "3",
+		"src": "https://unsplash.com/photos/uhnZZUaTIOs"
+	},
+	{
+		"name": "4",
+		"src": "https://unsplash.com/photos/bhonzdJMVjY"
+	},
+	{
+		"name": "5",
+		"src": "https://unsplash.com/photos/lAjk-UJa85c"
+	},
+	{
+		"name": "6",
+		"src": "https://unsplash.com/photos/klH-f7mw2Ws"
+	},
+	{
+		"name": "7",
+		"src": "https://unsplash.com/photos/_867Jy8LCkI"
+	},
+	{
+		"name": "8",
+		"src": "https://unsplash.com/photos/7nPxC8id3Ss"
+	},
+	{
+		"name": "9",
+		"src": "https://unsplash.com/photos/eSceitc-s30"
+	},
+	{
+		"name": "10",
+		"src": "https://unsplash.com/photos/MJymGVEazyY"
+	},
+	{
+		"name": "11",
+		"src": "https://unsplash.com/photos/jMOSPjsZXtg"
+	},
+	{
+		"name": "12",
+		"src": "https://unsplash.com/photos/ZJWUZ6JKAF0"
+	},
+	{
+		"name": "13",
+		"src": "https://unsplash.com/photos/rxvocsh0DUw"
+	},
+	{
+		"name": "14",
+		"src": "https://unsplash.com/photos/OmWw4SfE2DI"
+	},
+	{
+		"name": "15",
+		"src": "https://unsplash.com/photos/Px2Y-sio6-c"
+	},
+	{
+		"name": "16",
+		"src": "https://unsplash.com/photos/bXnoQq1sIBM"
+	},
+	{
+		"name": "17",
+		"src": "https://unsplash.com/photos/WHTLPrTPBk0"
+	},
+	{
+		"name": "18",
+		"src": "https://unsplash.com/photos/7qNZYwUbPic"
+	},
+	{
+		"name": "19",
+		"src": "https://unsplash.com/photos/VpzlatUJFfo"
+	},
+	{
+		"name": "20",
+		"src": "https://unsplash.com/photos/SAKLELG-pO8"
+	}
+];
+
 /** @type {Settings} */
 let settings = new Settings();
+let shuffledBag = [];
 
 init();
 
@@ -123,6 +207,17 @@ function hidePost(element, reason) {
 		});
 	} else if (settings.globalMuteAction === "hide") {
 		element.classList.add("mutable-hide");
+	} else if (settings.globalMuteAction === "kittens") {
+		element.classList.add("mutable-kittens");
+		const kittenSrc = `./images/kittens/${kittens[getIndexFromBag(kittens.length)].name}.jpg`;
+		element.style.setProperty("--overlay-image", `url("${kittenSrc}")`);
+		element.addEventListener("click", function (event) {
+			if (element.classList.contains("mutable-kittens")) {
+				element.classList.remove("mutable-kittens");
+				element.style.setProperty("--overlay-image", "");
+				event.stopPropagation();
+			}
+		});
 	} else {
 		console.error(`Unknown global mute action, defaulting to 'blur': ${settings.globalMuteAction}`);
 		element.classList.add("mutable-blur");
@@ -134,6 +229,42 @@ function hidePost(element, reason) {
 		});
 	}
 }
+
+/**
+ * Get a random index from the bag.
+ * @param {number} listSize
+ * @returns {number} A random index less than listSize
+ */
+function getIndexFromBag(listSize) {
+	if (shuffledBag.length === 0) {
+		for (let i = 0; i < listSize; i++) {
+			shuffledBag.push(i);
+		}
+		shuffledBag = shuffle(shuffledBag);
+	}
+	return shuffledBag.pop() % listSize;
+}
+
+/**
+ * Fisher-Yates shuffle.
+ * https://stackoverflow.com/a/2450976/1330144
+ * @param {Array.<T>} array
+ * @returns {Array.<T>}
+ * @template T
+ */
+function shuffle(array) {
+	let currentIndex = array.length,  randomIndex;
+	// While there remain elements to shuffle.
+	while (currentIndex != 0) {
+	  // Pick a remaining element.
+	  randomIndex = Math.floor(Math.random() * currentIndex);
+	  currentIndex--;
+	  // And swap it with the current element.
+	  [array[currentIndex], array[randomIndex]] = [
+		array[randomIndex], array[currentIndex]];
+	}
+	return array;
+  }
 
 /**
  * Reset all posts that have been hidden by Mutable.
