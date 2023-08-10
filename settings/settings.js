@@ -75,14 +75,21 @@ function initSettings() {
 		let name = parser.parserName;
 		let website = document.createElement("div");
 		website.classList.add("website");
-		// set element id
-		website.innerHTML = `
-			<div class="website-name">${name}</div>
-			<label class="toggle-switch">
-				<input id="${id}-checkbox" type="checkbox" checked>
-				<span class="toggle-inner"></span>
-			</label>
-		`;
+		let websiteName = document.createElement("div");
+		websiteName.classList.add("website-name");
+		websiteName.textContent = name;
+		website.appendChild(websiteName);
+		let toggleSwitch = document.createElement("label");
+		toggleSwitch.classList.add("toggle-switch");
+		let toggleCheckbox = document.createElement("input");
+		toggleCheckbox.id = `${id}-checkbox`;
+		toggleCheckbox.type = "checkbox";
+		toggleCheckbox.checked = true;
+		toggleSwitch.appendChild(toggleCheckbox);
+		let toggleInner = document.createElement("span");
+		toggleInner.classList.add("toggle-inner");
+		toggleSwitch.appendChild(toggleInner);
+		website.appendChild(toggleSwitch);
 		website.style.background = `linear-gradient(90deg, ${parser.brandColor} 0%, white 80%)`;
 		websitesContent.appendChild(website);
 		/** @type {HTMLInputElement} */
@@ -125,22 +132,22 @@ function renderSettings() {
 	for (let group of currentSettings.getGroupsList()) {
 		let groupElement = document.createElement("div");
 		groupElement.classList.add("group");
-		groupElement.innerHTML = `
-			<div class="group-top-bar">
-				<div class="group-name">${group.name}</div>
-			</div>
-		`;
+		let groupTopBar = document.createElement("div");
+		groupTopBar.classList.add("group-top-bar");
+		let groupTitle = document.createElement("div");
+		groupTitle.classList.add("group-name");
+		groupTitle.textContent = group.name;
+		groupTopBar.appendChild(groupTitle);
+		groupElement.appendChild(groupTopBar);
 		let groupContent = document.createElement("div");
 		groupContent.classList.add("group-content");
 		for (let pattern of group.patterns) {
 			let groupElement = document.createElement("div");
 			groupElement.classList.add("group-element");
-			groupElement.innerHTML = `
-				${pattern.plaintext()}
-			`;
+			groupElement.textContent = pattern.plaintext();
 			let deleteButton = document.createElement("button");
 			deleteButton.classList.add("element-delete");
-			deleteButton.innerHTML = "x";
+			deleteButton.textContent = "x";
 			deleteButton.addEventListener("click", () => {
 				group.deletePattern(pattern.id);
 				updateSettings();

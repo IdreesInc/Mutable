@@ -258,6 +258,17 @@ class RedditPost extends Post {
 	}
 }
 
+class FacebookPost extends Post {
+	getPostText() {
+		return this.postElement.innerText;
+	}
+
+	getPostContents() {
+		const text = this.postText();
+		return text;
+	}
+}
+
 class Parser {
 
 	/**
@@ -302,7 +313,7 @@ class Parser {
 	 * @returns {typeof Parser[]}
 	 */
 	static parsers() {
-		return [TwitterParser, RedditParser, MastodonParser, BlueskyParser];
+		return [TwitterParser, RedditParser, FacebookParser, MastodonParser, BlueskyParser];
 	}
 }
 
@@ -414,6 +425,31 @@ class RedditParser extends Parser {
 			});
 			return posts;
 		}
+	}
+}
+
+class FacebookParser extends Parser {
+
+	static id = "facebook";
+	static parserName = "Facebook";
+	static brandColor = "#d9ecff";
+
+	static appliesToPage() {
+		return window.location.host === "www.facebook.com" || window.location.host === "m.facebook.com";
+	}
+
+	/**
+	 * @returns {Post[]}
+	 */
+	static getPosts() {
+		let postContainers = $(document).find('[aria-labelledby][aria-describedby][' + PROCESSED_INDICATOR + '!="true"]');
+		let posts = [];
+		postContainers.each((index) => {
+			let postElement = postContainers[index];
+			let post = new FacebookPost(postElement);
+			posts.push(post);
+		});
+		return posts;
 	}
 }
 
