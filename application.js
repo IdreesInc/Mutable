@@ -83,6 +83,88 @@ const kittens = [
 		"src": "https://unsplash.com/photos/SAKLELG-pO8"
 	}
 ];
+const puppies = [
+	{
+		"name": "1",
+		"src": "https://unsplash.com/photos/fk4tiMlDFF0"
+	},
+	{
+		"name": "2",
+		"src": "https://unsplash.com/photos/9LkqymZFLrE"
+	},
+	{
+		"name": "3",
+		"src": "https://unsplash.com/photos/atOlntWcO4k"
+	},
+	{
+		"name": "4",
+		"src": "https://unsplash.com/photos/Qb7D1xw28Co"
+	},
+	{
+		"name": "5",
+		"src": "https://unsplash.com/photos/k4vhuUHv08o"
+	},
+	{
+		"name": "6",
+		"src": "https://unsplash.com/photos/eoqnr8ikwFE"
+	},
+	{
+		"name": "7",
+		"src": "https://unsplash.com/photos/wxfZi8eYdEk"
+	},
+	{
+		"name": "8",
+		"src": "https://unsplash.com/photos/m8v7BDLV8yE"
+	},
+	{
+		"name": "9",
+		"src": "https://unsplash.com/photos/z_U6bPp_Rjg"
+	},
+	{
+		"name": "10",
+		"src": "https://unsplash.com/photos/zr0beNrnvgQ"
+	},
+	{
+		"name": "11",
+		"src": "https://unsplash.com/photos/vMNr5gbeeTk"
+	},
+	{
+		"name": "12",
+		"src": "https://unsplash.com/photos/ORzQG8jKOO4"
+	},
+	{
+		"name": "13",
+		"src": "https://unsplash.com/photos/TzjMd7i5WQI"
+	},
+	{
+		"name": "14",
+		"src": "https://unsplash.com/photos/DsGeUBaJPwc"
+	},
+	{
+		"name": "15",
+		"src": "https://unsplash.com/photos/JK8w20Zantg"
+	},
+	{
+		"name": "16",
+		"src": "https://unsplash.com/photos/oO5MBxRCadY"
+	},
+	{
+		"name": "17",
+		"src": "https://unsplash.com/photos/6uPsI12Xqjk"
+	},
+	{
+		"name": "18",
+		"src": "https://unsplash.com/photos/AsCYNjt6IF0"
+	},
+	{
+		"name": "19",
+		"src": "https://unsplash.com/photos/7T8ammfU8-s"
+	},
+	{
+		"name": "20",
+		"src": "https://unsplash.com/photos/VQPD1fc_Y8g"
+	}
+];
 
 /** @type {Settings} */
 let settings = new Settings();
@@ -208,12 +290,23 @@ function hidePost(element, reason) {
 	} else if (settings.globalMuteAction === "hide") {
 		element.classList.add("mutable-hide");
 	} else if (settings.globalMuteAction === "kittens") {
-		element.classList.add("mutable-kittens");
+		element.classList.add("mutable-image-overlay");
 		const kittenSrc = `./images/kittens/${kittens[getIndexFromBag(kittens.length)].name}.jpg`;
 		element.style.setProperty("--overlay-image", `url("${kittenSrc}")`);
 		element.addEventListener("click", function (event) {
-			if (element.classList.contains("mutable-kittens")) {
-				element.classList.remove("mutable-kittens");
+			if (element.classList.contains("mutable-image-overlay")) {
+				element.classList.remove("mutable-image-overlay");
+				element.style.setProperty("--overlay-image", "");
+				event.stopPropagation();
+			}
+		});
+	} else if (settings.globalMuteAction === "puppies") {
+		element.classList.add("mutable-image-overlay");
+		const puppySrc = `./images/puppies/${puppies[getIndexFromBag(puppies.length)].name}.jpg`;
+		element.style.setProperty("--overlay-image", `url("${puppySrc}")`);
+		element.addEventListener("click", function (event) {
+			if (element.classList.contains("mutable-image-overlay")) {
+				element.classList.remove("mutable-image-overlay");
 				element.style.setProperty("--overlay-image", "");
 				event.stopPropagation();
 			}
@@ -275,6 +368,7 @@ function resetPosts() {
 		post.classList.remove("mutable-blur");
 		post.classList.remove("mutable-hide");
 		post.classList.remove("mutable-blur-explanation");
+		post.classList.remove("mutable-image-overlay");
 	}
 }
 

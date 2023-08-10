@@ -40,11 +40,11 @@
 	display: none !important;
 }
 
-.mutable-kittens {
+.mutable-image-overlay {
 	position: relative;
 }
 
-.mutable-kittens::after {
+.mutable-image-overlay::after {
 	box-sizing: border-box;
 	position: absolute;
 	display: flex;
