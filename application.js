@@ -373,7 +373,7 @@ function hidePost(element, reason) {
 		element.classList.add("mutable-hide");
 	} else if (settings.globalMuteAction === "kittens") {
 		element.classList.add("mutable-image-overlay");
-		const kittenSrc = `./images/kittens/${kittens[getIndexFromBag(kittens.length)].name}.jpg`;
+		const kittenSrc = chrome.runtime.getURL(`./images/kittens/${kittens[getIndexFromBag(kittens.length)].name}.jpg`);
 		element.style.setProperty("--overlay-image", `url("${kittenSrc}")`);
 		element.addEventListener("click", function (event) {
 			if (element.classList.contains("mutable-image-overlay")) {
@@ -384,7 +384,7 @@ function hidePost(element, reason) {
 		});
 	} else if (settings.globalMuteAction === "puppies") {
 		element.classList.add("mutable-image-overlay");
-		const puppySrc = `./images/puppies/${puppies[getIndexFromBag(puppies.length)].name}.jpg`;
+		const puppySrc = chrome.runtime.getURL(`./images/puppies/${puppies[getIndexFromBag(puppies.length)].name}.jpg`);
 		element.style.setProperty("--overlay-image", `url("${puppySrc}")`);
 		element.addEventListener("click", function (event) {
 			if (element.classList.contains("mutable-image-overlay")) {
@@ -395,7 +395,7 @@ function hidePost(element, reason) {
 		});
 	} else if (settings.globalMuteAction === "hedgehogs") {
 		element.classList.add("mutable-image-overlay");
-		const hedgehogSrc = `./images/hedgehogs/${hedgehogs[getIndexFromBag(hedgehogs.length)].name}.jpg`;
+		const hedgehogSrc = chrome.runtime.getURL(`./images/hedgehogs/${hedgehogs[getIndexFromBag(hedgehogs.length)].name}.jpg`);
 		element.style.setProperty("--overlay-image", `url("${hedgehogSrc}")`);
 		element.addEventListener("click", function (event) {
 			if (element.classList.contains("mutable-image-overlay")) {

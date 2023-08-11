@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "Mutable",
 	"description": "Mute keywords across multiple social media sites at once.",
-	"version": "1.1",
+	"version": "1.1.1",
 	"homepage_url": "https://idreesinc.com",
 	"icons": {
 		"48": "icons/foil-48.png",
@@ -21,6 +21,12 @@
 	},
 	"permissions": [
 		"storage"
+	],
+	"web_accessible_resources": [
+		{
+			"resources": ["images/*"],
+			"matches": ["<all_urls>"]
+		}
 	],
 	"browser_specific_settings": {
 		"gecko": {
