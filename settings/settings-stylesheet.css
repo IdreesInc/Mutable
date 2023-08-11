@@ -425,8 +425,6 @@ input:checked + .toggle-inner:before {
 	background: linear-gradient(180deg, #BCE7FF 0%, #FFF 100%);
 }
 
-/* first child  */
-
 #settings-window-content > .settings-block:first-child {
 	margin-top: 0px;
 }
@@ -474,4 +472,37 @@ input:checked + .toggle-inner:before {
 	transform: translateX(-20px);
 	margin-top: 1px;
 	pointer-events: none;
+}
+
+#donations-window > .window-top-bar {
+	background: linear-gradient(180deg, #f4d7ff 0%, #FFF 100%);
+}
+
+#donations-window-content {
+	align-items: center;
+}
+
+#donate {
+	width: 100%;
+	height: 32px;
+	border: var(--light-stroke) solid #000;
+	background: #F9F9F9;
+	box-shadow: 1px 1px 0px 0px #000;
+	border-radius: 8px;
+	padding: 2px;
+	padding-top: 3px;
+	box-sizing: border-box;
+	text-align: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: linear-gradient(to bottom right, #fce4ff 0%, #FFF 100%);
+	cursor: pointer;
+}
+
+#donate-link {
+	text-decoration: none;
+	color: black;
+	width: 100%;
+	margin-top: 12px;
 }
