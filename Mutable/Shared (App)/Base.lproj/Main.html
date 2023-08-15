@@ -10,15 +10,118 @@
     <script src="../Script.js" defer></script>
 </head>
 <body>
-    <img src="../Icon.png" width="128" height="128" alt="Mutable Icon">
-        <p class="platform-ios">You can turn on Mutable’s Safari extension in Settings.</p>
-        <p class="platform-mac state-unknown">You can turn on Mutable’s extension in Safari Extensions preferences.</p>
-        <p class="platform-mac state-on">Mutable’s extension is currently on. You can turn it off in Safari Extensions preferences.</p>
-        <p class="platform-mac state-off">Mutable’s extension is currently off. You can turn it on in Safari Extensions preferences.</p>
-<!--        <button class="platform-mac open-preferences">Quit and Open Safari Extensions Preferences…</button>-->
-    <button class="platform-ios open-preferences">
-        <span class="platform-mac">MAC</span>
-        <span class="platform-ios">IOS</span>
-    </button>
+    <div id="background"></div>
+    <div id="container">
+        <div id="title-container">
+            <div id="title">Mutable</div>
+            <div id="tagline">Turn Down the Noise</div>
+        </div>
+        <div id="enable-window" class="window">
+            <div class="window-top-bar">
+                <div class="window-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                        </path>
+                    </svg>
+                </div>
+                <div class="window-title">how to enable</div>
+                <div class="window-controls">
+                    <div class="window-button left-window-button"></div>
+                    <div class="window-button right-window-button"></div>
+                </div>
+            </div>
+            <div id="websites-content" class="window-content">
+                <p class="platform-ios">You can turn on Mutable’s Safari extension in Settings.</p>
+                <p class="platform-mac state-unknown">You can turn on Mutable’s extension in Safari Extensions preferences.</p>
+                <p class="platform-mac state-on">Mutable’s extension is currently on. You can turn it off in Safari Extensions preferences.</p>
+                <p class="platform-mac state-off">Mutable’s extension is currently off. You can turn it on in Safari Extensions preferences.</p>
+                <button class="platform-ios open-preferences">
+                    <span class="platform-mac">Open Safari Settings</span>
+                    <span class="platform-ios">Open Safari Preferences</span>
+                </button>
+            </div>
+        </div>
+        <div id="mute-window" class="window">
+            <div class="window-top-bar">
+                <div class="window-icon">
+                    <svg width="25" height="25" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9.16666 4.16667L5 7.5H1.66666V12.5H5L9.16666 15.8333V4.16667Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M19.1667 7.5L14.1667 12.5" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M14.1667 7.5L19.1667 12.5" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                </div>
+                <div class="window-title">how to use</div>
+                <div class="window-controls">
+                    <div class="window-button left-window-button"></div>
+                    <div class="window-button right-window-button"></div>
+                </div>
+            </div>
+            <div id="groups-container" class="window-content">
+                <div class="group">
+                    <div class="group-top-bar">
+                        <div class="group-name">Default Group</div>
+                    </div>
+                    <div class="group-content">
+                        <div class="group-element">alpha
+                            <button class="element-delete">x</button>
+                        </div>
+                        <div class="group-element">beta
+                            <button class="element-delete">x</button>
+                        </div>
+                        <div class="group-element">gamma
+                            <button class="element-delete">x</button>
+                        </div>
+                        <div class="add-button">
+                            <div class="add-button-text">add word</div>
+                            <div class="add-button-plus">+</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end -->
+        <div id="footer">
+            <div id="signature">made with ❤️ by idrees</div>
+        </div>
+    </div>
+    <div id="modal-container">
+        <div id="add-word-modal" class="window">
+            <div class="window-top-bar">
+                <div class="window-icon">
+                    <svg width="25" height="25" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9.16666 4.16667L5 7.5H1.66666V12.5H5L9.16666 15.8333V4.16667Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M19.1667 7.5L14.1667 12.5" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M14.1667 7.5L19.1667 12.5" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                </div>
+                <div class="window-title">mute a word</div>
+                <div class="window-controls">
+                    <div class="window-button left-window-button"></div>
+                    <div class="window-button right-window-button"></div>
+                </div>
+            </div>
+            <div class="window-content">
+                Type in the word or phrase that you wish to mute:
+                <input id="add-word-input" class="settings-text-input keyword-input" type="text" placeholder="eg. tulips">
+                <div class="settings-block">
+                    case sensitive
+                    <label class="toggle-switch settings-toggle">
+                        <input id="add-word-case-sensitive" type="checkbox">
+                        <span class="toggle-inner settings-toggle-inner"></span>
+                    </label>
+                </div>
+                <div class="button-block">
+                    <div id="add-word-submit" class="submit-button">
+                        add to mute list
+                    </div>
+                    <div id="add-word-cancel" class="cancel-button">
+                        never mind
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

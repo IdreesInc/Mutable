@@ -57,6 +57,8 @@
 		4AD455D32A86B42B0046CF6D /* application.js in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455B32A86B42B0046CF6D /* application.js */; };
 		4AD455D42A86B42B0046CF6D /* jquery.js in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455B42A86B42B0046CF6D /* jquery.js */; };
 		4AD455D52A86B42B0046CF6D /* replace.py in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455B52A86B42B0046CF6D /* replace.py */; };
+		4ADD12632A8B02E900E822C9 /* foil.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4ADD12622A8B02E900E822C9 /* foil.jpg */; };
+		4ADD12642A8B02E900E822C9 /* foil.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4ADD12622A8B02E900E822C9 /* foil.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -139,6 +141,7 @@
 		4AD455B32A86B42B0046CF6D /* application.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = application.js; path = ../../application.js; sourceTree = "<group>"; };
 		4AD455B42A86B42B0046CF6D /* jquery.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = jquery.js; path = ../../jquery.js; sourceTree = "<group>"; };
 		4AD455B52A86B42B0046CF6D /* replace.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; name = replace.py; path = ../../replace.py; sourceTree = "<group>"; };
+		4ADD12622A8B02E900E822C9 /* foil.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = foil.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -201,6 +204,7 @@
 			children = (
 				4AD4554A2A86B4290046CF6D /* Main.html */,
 				4AD4554C2A86B4290046CF6D /* Icon.png */,
+				4ADD12622A8B02E900E822C9 /* foil.jpg */,
 				4AD4554D2A86B4290046CF6D /* Style.css */,
 				4AD4554E2A86B4290046CF6D /* Script.js */,
 			);
@@ -415,6 +419,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4AD455892A86B42B0046CF6D /* Icon.png in Resources */,
+				4ADD12632A8B02E900E822C9 /* foil.jpg in Resources */,
 				4AD455602A86B42B0046CF6D /* LaunchScreen.storyboard in Resources */,
 				4AD455872A86B42B0046CF6D /* Main.html in Resources */,
 				4AD4558D2A86B42B0046CF6D /* Script.js in Resources */,
@@ -428,6 +433,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4ADD12642A8B02E900E822C9 /* foil.jpg in Resources */,
 				4AD4558A2A86B42B0046CF6D /* Icon.png in Resources */,
 				4AD4558C2A86B42B0046CF6D /* Style.css in Resources */,
 				4AD4556F2A86B42B0046CF6D /* Main.storyboard in Resources */,
