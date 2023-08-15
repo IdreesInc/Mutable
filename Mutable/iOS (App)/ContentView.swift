@@ -9,7 +9,26 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        Text("Hello, Sexy!")
+        ZStack {
+            Image("foil")
+                .resizable()
+                // This is a stupid way to ensure that the top and bottom bars are covered
+                .padding(-80)
+                .aspectRatio(contentMode: .fill)
+            VStack {
+//                Image("LargeIcon")
+                Text("Welcome to Mutable!")
+                Text("Hello, Sexy!")
+                    .onTapGesture {
+                        SFSafariApplication.showPreferencesForExtension(withIdentifier: extensionBundleIdentifier) { error in
+                            guard error == nil else {
+                                // Insert code to inform the user that something went wrong.
+                                return
+                            }
+                        }
+                    }
+            }
+        }
     }
 }
 
