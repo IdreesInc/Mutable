@@ -60,11 +60,12 @@ class ViewController: PlatformViewController, WKNavigationDelegate, WKScriptMess
     }
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-#if os(macOS)
         if (message.body as! String != "open-preferences") {
             return;
         }
-
+#if os(iOS)
+        UIApplication.shared.open(URL(string: "App-Prefs:Safari&path=WEB_EXTENSIONS/Mutable")!)
+#elseif os(macOS)
         SFSafariApplication.showPreferencesForExtension(withIdentifier: extensionBundleIdentifier) { error in
             guard error == nil else {
                 // Insert code to inform the user that something went wrong.
