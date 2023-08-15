@@ -7,6 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4A6F77C22A8B28CD00FB1A29 /* mac-extension-example.png in Resources */ = {isa = PBXBuildFile; fileRef = 4A6F77C12A8B28CD00FB1A29 /* mac-extension-example.png */; };
+		4A6F77C32A8B28CD00FB1A29 /* mac-extension-example.png in Resources */ = {isa = PBXBuildFile; fileRef = 4A6F77C12A8B28CD00FB1A29 /* mac-extension-example.png */; };
+		4A6F77C72A8C26D400FB1A29 /* ios-settings.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4A6F77C42A8C26D400FB1A29 /* ios-settings.jpg */; };
+		4A6F77C82A8C26D400FB1A29 /* ios-settings.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4A6F77C42A8C26D400FB1A29 /* ios-settings.jpg */; };
+		4A6F77C92A8C26D400FB1A29 /* ios-extension-settings.png in Resources */ = {isa = PBXBuildFile; fileRef = 4A6F77C52A8C26D400FB1A29 /* ios-extension-settings.png */; };
+		4A6F77CA2A8C26D400FB1A29 /* ios-extension-settings.png in Resources */ = {isa = PBXBuildFile; fileRef = 4A6F77C52A8C26D400FB1A29 /* ios-extension-settings.png */; };
+		4A6F77CB2A8C26D400FB1A29 /* ios-safari-settings.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4A6F77C62A8C26D400FB1A29 /* ios-safari-settings.jpg */; };
+		4A6F77CC2A8C26D400FB1A29 /* ios-safari-settings.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4A6F77C62A8C26D400FB1A29 /* ios-safari-settings.jpg */; };
+		4A6F77CE2A8C29B300FB1A29 /* ios-mutable-settings.png in Resources */ = {isa = PBXBuildFile; fileRef = 4A6F77CD2A8C29B300FB1A29 /* ios-mutable-settings.png */; };
+		4A6F77CF2A8C29B300FB1A29 /* ios-mutable-settings.png in Resources */ = {isa = PBXBuildFile; fileRef = 4A6F77CD2A8C29B300FB1A29 /* ios-mutable-settings.png */; };
+		4A6F77D42A8C35F600FB1A29 /* ios-safari-menu.png in Resources */ = {isa = PBXBuildFile; fileRef = 4A6F77D32A8C35F600FB1A29 /* ios-safari-menu.png */; };
+		4A6F77D52A8C35F600FB1A29 /* ios-safari-menu.png in Resources */ = {isa = PBXBuildFile; fileRef = 4A6F77D32A8C35F600FB1A29 /* ios-safari-menu.png */; };
 		4AD4555B2A86B42B0046CF6D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD4555A2A86B42B0046CF6D /* AppDelegate.swift */; };
 		4AD4555D2A86B42B0046CF6D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD4555C2A86B42B0046CF6D /* SceneDelegate.swift */; };
 		4AD455602A86B42B0046CF6D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AD4555E2A86B42B0046CF6D /* LaunchScreen.storyboard */; };
@@ -59,6 +71,8 @@
 		4AD455D52A86B42B0046CF6D /* replace.py in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455B52A86B42B0046CF6D /* replace.py */; };
 		4ADD12632A8B02E900E822C9 /* foil.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4ADD12622A8B02E900E822C9 /* foil.jpg */; };
 		4ADD12642A8B02E900E822C9 /* foil.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4ADD12622A8B02E900E822C9 /* foil.jpg */; };
+		4ADD12662A8B0FC200E822C9 /* ios-extension-example.png in Resources */ = {isa = PBXBuildFile; fileRef = 4ADD12652A8B0FC200E822C9 /* ios-extension-example.png */; };
+		4ADD12672A8B0FC200E822C9 /* ios-extension-example.png in Resources */ = {isa = PBXBuildFile; fileRef = 4ADD12652A8B0FC200E822C9 /* ios-extension-example.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -104,6 +118,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4A6F77C12A8B28CD00FB1A29 /* mac-extension-example.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mac-extension-example.png"; sourceTree = "<group>"; };
+		4A6F77C42A8C26D400FB1A29 /* ios-settings.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "ios-settings.jpg"; sourceTree = "<group>"; };
+		4A6F77C52A8C26D400FB1A29 /* ios-extension-settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ios-extension-settings.png"; sourceTree = "<group>"; };
+		4A6F77C62A8C26D400FB1A29 /* ios-safari-settings.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "ios-safari-settings.jpg"; sourceTree = "<group>"; };
+		4A6F77CD2A8C29B300FB1A29 /* ios-mutable-settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ios-mutable-settings.png"; sourceTree = "<group>"; };
+		4A6F77D32A8C35F600FB1A29 /* ios-safari-menu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ios-safari-menu.png"; sourceTree = "<group>"; };
 		4AD4554B2A86B4290046CF6D /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = ../Base.lproj/Main.html; sourceTree = "<group>"; };
 		4AD4554C2A86B4290046CF6D /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		4AD4554D2A86B4290046CF6D /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
@@ -142,6 +162,7 @@
 		4AD455B42A86B42B0046CF6D /* jquery.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = jquery.js; path = ../../jquery.js; sourceTree = "<group>"; };
 		4AD455B52A86B42B0046CF6D /* replace.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; name = replace.py; path = ../../replace.py; sourceTree = "<group>"; };
 		4ADD12622A8B02E900E822C9 /* foil.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = foil.jpg; sourceTree = "<group>"; };
+		4ADD12652A8B0FC200E822C9 /* ios-extension-example.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ios-extension-example.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -204,6 +225,13 @@
 			children = (
 				4AD4554A2A86B4290046CF6D /* Main.html */,
 				4AD4554C2A86B4290046CF6D /* Icon.png */,
+				4ADD12652A8B0FC200E822C9 /* ios-extension-example.png */,
+				4A6F77C52A8C26D400FB1A29 /* ios-extension-settings.png */,
+				4A6F77C62A8C26D400FB1A29 /* ios-safari-settings.jpg */,
+				4A6F77C42A8C26D400FB1A29 /* ios-settings.jpg */,
+				4A6F77CD2A8C29B300FB1A29 /* ios-mutable-settings.png */,
+				4A6F77D32A8C35F600FB1A29 /* ios-safari-menu.png */,
+				4A6F77C12A8B28CD00FB1A29 /* mac-extension-example.png */,
 				4ADD12622A8B02E900E822C9 /* foil.jpg */,
 				4AD4554D2A86B4290046CF6D /* Style.css */,
 				4AD4554E2A86B4290046CF6D /* Script.js */,
@@ -419,13 +447,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				4AD455892A86B42B0046CF6D /* Icon.png in Resources */,
+				4A6F77CE2A8C29B300FB1A29 /* ios-mutable-settings.png in Resources */,
 				4ADD12632A8B02E900E822C9 /* foil.jpg in Resources */,
 				4AD455602A86B42B0046CF6D /* LaunchScreen.storyboard in Resources */,
 				4AD455872A86B42B0046CF6D /* Main.html in Resources */,
+				4A6F77C92A8C26D400FB1A29 /* ios-extension-settings.png in Resources */,
+				4A6F77C22A8B28CD00FB1A29 /* mac-extension-example.png in Resources */,
+				4A6F77C72A8C26D400FB1A29 /* ios-settings.jpg in Resources */,
 				4AD4558D2A86B42B0046CF6D /* Script.js in Resources */,
 				4AD455912A86B42B0046CF6D /* Assets.xcassets in Resources */,
 				4AD455632A86B42B0046CF6D /* Main.storyboard in Resources */,
+				4A6F77CB2A8C26D400FB1A29 /* ios-safari-settings.jpg in Resources */,
+				4A6F77D42A8C35F600FB1A29 /* ios-safari-menu.png in Resources */,
 				4AD4558B2A86B42B0046CF6D /* Style.css in Resources */,
+				4ADD12662A8B0FC200E822C9 /* ios-extension-example.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -433,13 +468,20 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4A6F77C32A8B28CD00FB1A29 /* mac-extension-example.png in Resources */,
 				4ADD12642A8B02E900E822C9 /* foil.jpg in Resources */,
+				4A6F77CC2A8C26D400FB1A29 /* ios-safari-settings.jpg in Resources */,
+				4A6F77CF2A8C29B300FB1A29 /* ios-mutable-settings.png in Resources */,
 				4AD4558A2A86B42B0046CF6D /* Icon.png in Resources */,
+				4ADD12672A8B0FC200E822C9 /* ios-extension-example.png in Resources */,
+				4A6F77C82A8C26D400FB1A29 /* ios-settings.jpg in Resources */,
 				4AD4558C2A86B42B0046CF6D /* Style.css in Resources */,
+				4A6F77D52A8C35F600FB1A29 /* ios-safari-menu.png in Resources */,
 				4AD4556F2A86B42B0046CF6D /* Main.storyboard in Resources */,
 				4AD4558E2A86B42B0046CF6D /* Script.js in Resources */,
 				4AD455922A86B42B0046CF6D /* Assets.xcassets in Resources */,
 				4AD455882A86B42B0046CF6D /* Main.html in Resources */,
+				4A6F77CA2A8C26D400FB1A29 /* ios-extension-settings.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -894,6 +936,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "macOS (App)/Mutable.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4QHN4728NU;
@@ -930,6 +973,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "macOS (App)/Mutable.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4QHN4728NU;

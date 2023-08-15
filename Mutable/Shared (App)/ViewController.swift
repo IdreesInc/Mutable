@@ -64,7 +64,10 @@ class ViewController: PlatformViewController, WKNavigationDelegate, WKScriptMess
             return;
         }
 #if os(iOS)
-        UIApplication.shared.open(URL(string: "App-Prefs:Safari&path=WEB_EXTENSIONS/Mutable")!)
+        guard let url = URL(string: UIApplication.openSettingsURLString) else {
+            return
+        }
+        UIApplication.shared.open(url)
 #elseif os(macOS)
         SFSafariApplication.showPreferencesForExtension(withIdentifier: extensionBundleIdentifier) { error in
             guard error == nil else {

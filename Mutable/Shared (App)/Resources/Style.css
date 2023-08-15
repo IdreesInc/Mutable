@@ -7,8 +7,7 @@
 }
 
 :root {
-    color-scheme: light dark;
-
+/*    color-scheme: light dark;*/
     --spacing: 20px;
 }
 
@@ -60,6 +59,7 @@ body.state-off :is(.state-on, .state-unknown) {
 
 button {
     font-size: 1em;
+    color: black;
 }
 
 :root {
@@ -70,13 +70,21 @@ button {
 
 html, body {
     font-family: Epilogue, sans-serif;
+    line-height: 1.25;
     min-width: 360px;
     padding: 0;
     margin: 0;
+    color: black;
 }
 
 html {
-    background: #fffdfa;
+    background: #f4d6d8;
+/*    background: #d1dcf0;*/
+/*    background: #e1ecd1;*/
+}
+
+body {
+    margin-top: 60px;
 }
 
 #background {
@@ -187,10 +195,15 @@ html {
 }
 
 .window-content {
-    padding: 20px;
+    padding: 10px 20px 20px 20px;
     box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
+font-size: 14px;
+/*    display: flex;*/
+/*    flex-direction: column;*/
+}
+
+.window-content > img {
+    width: 100%;
 }
 
 #enable-window > .window-top-bar {

@@ -455,6 +455,7 @@ input:checked + .toggle-inner:before {
 	padding-right: 19px;
 	box-sizing: border-box;
 	appearance: none;
+	color: black;
 }
 
 .select-container {
