@@ -43,32 +43,20 @@
 		4AD455942A86B42B0046CF6D /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD455522A86B42B0046CF6D /* SafariWebExtensionHandler.swift */; };
 		4AD455B62A86B42B0046CF6D /* settings in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455A62A86B42B0046CF6D /* settings */; };
 		4AD455B82A86B42B0046CF6D /* images in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455A82A86B42B0046CF6D /* images */; };
-		4AD455B92A86B42B0046CF6D /* Mutable.code-workspace in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455A92A86B42B0046CF6D /* Mutable.code-workspace */; };
-		4AD455BB2A86B42B0046CF6D /* build.sh in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455AB2A86B42B0046CF6D /* build.sh */; };
-		4AD455BC2A86B42B0046CF6D /* package-lock.json in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455AC2A86B42B0046CF6D /* package-lock.json */; };
-		4AD455BD2A86B42B0046CF6D /* package.json in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455AD2A86B42B0046CF6D /* package.json */; };
 		4AD455BE2A86B42B0046CF6D /* icons in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455AE2A86B42B0046CF6D /* icons */; };
 		4AD455BF2A86B42B0046CF6D /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455AF2A86B42B0046CF6D /* manifest.json */; };
-		4AD455C02A86B42B0046CF6D /* mutable-packaged.zip in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455B02A86B42B0046CF6D /* mutable-packaged.zip */; };
 		4AD455C12A86B42B0046CF6D /* mutable-stylesheet.css in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455B12A86B42B0046CF6D /* mutable-stylesheet.css */; };
 		4AD455C22A86B42B0046CF6D /* shared.js in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455B22A86B42B0046CF6D /* shared.js */; };
 		4AD455C32A86B42B0046CF6D /* application.js in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455B32A86B42B0046CF6D /* application.js */; };
 		4AD455C42A86B42B0046CF6D /* jquery.js in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455B42A86B42B0046CF6D /* jquery.js */; };
-		4AD455C52A86B42B0046CF6D /* replace.py in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455B52A86B42B0046CF6D /* replace.py */; };
 		4AD455C62A86B42B0046CF6D /* settings in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455A62A86B42B0046CF6D /* settings */; };
 		4AD455C82A86B42B0046CF6D /* images in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455A82A86B42B0046CF6D /* images */; };
-		4AD455C92A86B42B0046CF6D /* Mutable.code-workspace in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455A92A86B42B0046CF6D /* Mutable.code-workspace */; };
-		4AD455CB2A86B42B0046CF6D /* build.sh in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455AB2A86B42B0046CF6D /* build.sh */; };
-		4AD455CC2A86B42B0046CF6D /* package-lock.json in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455AC2A86B42B0046CF6D /* package-lock.json */; };
-		4AD455CD2A86B42B0046CF6D /* package.json in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455AD2A86B42B0046CF6D /* package.json */; };
 		4AD455CE2A86B42B0046CF6D /* icons in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455AE2A86B42B0046CF6D /* icons */; };
 		4AD455CF2A86B42B0046CF6D /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455AF2A86B42B0046CF6D /* manifest.json */; };
-		4AD455D02A86B42B0046CF6D /* mutable-packaged.zip in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455B02A86B42B0046CF6D /* mutable-packaged.zip */; };
 		4AD455D12A86B42B0046CF6D /* mutable-stylesheet.css in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455B12A86B42B0046CF6D /* mutable-stylesheet.css */; };
 		4AD455D22A86B42B0046CF6D /* shared.js in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455B22A86B42B0046CF6D /* shared.js */; };
 		4AD455D32A86B42B0046CF6D /* application.js in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455B32A86B42B0046CF6D /* application.js */; };
 		4AD455D42A86B42B0046CF6D /* jquery.js in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455B42A86B42B0046CF6D /* jquery.js */; };
-		4AD455D52A86B42B0046CF6D /* replace.py in Resources */ = {isa = PBXBuildFile; fileRef = 4AD455B52A86B42B0046CF6D /* replace.py */; };
 		4ADD12632A8B02E900E822C9 /* foil.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4ADD12622A8B02E900E822C9 /* foil.jpg */; };
 		4ADD12642A8B02E900E822C9 /* foil.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4ADD12622A8B02E900E822C9 /* foil.jpg */; };
 		4ADD12662A8B0FC200E822C9 /* ios-extension-example.png in Resources */ = {isa = PBXBuildFile; fileRef = 4ADD12652A8B0FC200E822C9 /* ios-extension-example.png */; };
@@ -149,18 +137,12 @@
 		4AD455862A86B42B0046CF6D /* Mutable.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Mutable.entitlements; sourceTree = "<group>"; };
 		4AD455A62A86B42B0046CF6D /* settings */ = {isa = PBXFileReference; lastKnownFileType = folder; name = settings; path = ../../settings; sourceTree = "<group>"; };
 		4AD455A82A86B42B0046CF6D /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; name = images; path = ../../images; sourceTree = "<group>"; };
-		4AD455A92A86B42B0046CF6D /* Mutable.code-workspace */ = {isa = PBXFileReference; lastKnownFileType = text; name = "Mutable.code-workspace"; path = "../../Mutable.code-workspace"; sourceTree = "<group>"; };
-		4AD455AB2A86B42B0046CF6D /* build.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; name = build.sh; path = ../../build.sh; sourceTree = "<group>"; };
-		4AD455AC2A86B42B0046CF6D /* package-lock.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "package-lock.json"; path = "../../package-lock.json"; sourceTree = "<group>"; };
-		4AD455AD2A86B42B0046CF6D /* package.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = package.json; path = ../../package.json; sourceTree = "<group>"; };
 		4AD455AE2A86B42B0046CF6D /* icons */ = {isa = PBXFileReference; lastKnownFileType = folder; name = icons; path = ../../icons; sourceTree = "<group>"; };
 		4AD455AF2A86B42B0046CF6D /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = manifest.json; path = ../../manifest.json; sourceTree = "<group>"; };
-		4AD455B02A86B42B0046CF6D /* mutable-packaged.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; name = "mutable-packaged.zip"; path = "../../mutable-packaged.zip"; sourceTree = "<group>"; };
 		4AD455B12A86B42B0046CF6D /* mutable-stylesheet.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = "mutable-stylesheet.css"; path = "../../mutable-stylesheet.css"; sourceTree = "<group>"; };
 		4AD455B22A86B42B0046CF6D /* shared.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = shared.js; path = ../../shared.js; sourceTree = "<group>"; };
 		4AD455B32A86B42B0046CF6D /* application.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = application.js; path = ../../application.js; sourceTree = "<group>"; };
 		4AD455B42A86B42B0046CF6D /* jquery.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = jquery.js; path = ../../jquery.js; sourceTree = "<group>"; };
-		4AD455B52A86B42B0046CF6D /* replace.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; name = replace.py; path = ../../replace.py; sourceTree = "<group>"; };
 		4ADD12622A8B02E900E822C9 /* foil.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = foil.jpg; sourceTree = "<group>"; };
 		4ADD12652A8B0FC200E822C9 /* ios-extension-example.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ios-extension-example.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -304,18 +286,12 @@
 			children = (
 				4AD455A62A86B42B0046CF6D /* settings */,
 				4AD455A82A86B42B0046CF6D /* images */,
-				4AD455A92A86B42B0046CF6D /* Mutable.code-workspace */,
-				4AD455AB2A86B42B0046CF6D /* build.sh */,
-				4AD455AC2A86B42B0046CF6D /* package-lock.json */,
-				4AD455AD2A86B42B0046CF6D /* package.json */,
 				4AD455AE2A86B42B0046CF6D /* icons */,
 				4AD455AF2A86B42B0046CF6D /* manifest.json */,
-				4AD455B02A86B42B0046CF6D /* mutable-packaged.zip */,
 				4AD455B12A86B42B0046CF6D /* mutable-stylesheet.css */,
 				4AD455B22A86B42B0046CF6D /* shared.js */,
 				4AD455B32A86B42B0046CF6D /* application.js */,
 				4AD455B42A86B42B0046CF6D /* jquery.js */,
-				4AD455B52A86B42B0046CF6D /* replace.py */,
 			);
 			name = Resources;
 			path = "Shared (Extension)";
@@ -490,18 +466,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				4AD455D42A86B42B0046CF6D /* jquery.js in Resources */,
-				4AD455D02A86B42B0046CF6D /* mutable-packaged.zip in Resources */,
-				4AD455CD2A86B42B0046CF6D /* package.json in Resources */,
-				4AD455CC2A86B42B0046CF6D /* package-lock.json in Resources */,
 				4AD455CF2A86B42B0046CF6D /* manifest.json in Resources */,
 				4AD455C82A86B42B0046CF6D /* images in Resources */,
 				4AD455CE2A86B42B0046CF6D /* icons in Resources */,
-				4AD455C92A86B42B0046CF6D /* Mutable.code-workspace in Resources */,
 				4AD455D32A86B42B0046CF6D /* application.js in Resources */,
 				4AD455C62A86B42B0046CF6D /* settings in Resources */,
-				4AD455CB2A86B42B0046CF6D /* build.sh in Resources */,
 				4AD455D12A86B42B0046CF6D /* mutable-stylesheet.css in Resources */,
-				4AD455D52A86B42B0046CF6D /* replace.py in Resources */,
 				4AD455D22A86B42B0046CF6D /* shared.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -511,18 +481,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				4AD455C42A86B42B0046CF6D /* jquery.js in Resources */,
-				4AD455C02A86B42B0046CF6D /* mutable-packaged.zip in Resources */,
-				4AD455BD2A86B42B0046CF6D /* package.json in Resources */,
-				4AD455BC2A86B42B0046CF6D /* package-lock.json in Resources */,
 				4AD455BF2A86B42B0046CF6D /* manifest.json in Resources */,
 				4AD455B82A86B42B0046CF6D /* images in Resources */,
 				4AD455BE2A86B42B0046CF6D /* icons in Resources */,
-				4AD455B92A86B42B0046CF6D /* Mutable.code-workspace in Resources */,
 				4AD455C32A86B42B0046CF6D /* application.js in Resources */,
 				4AD455B62A86B42B0046CF6D /* settings in Resources */,
-				4AD455BB2A86B42B0046CF6D /* build.sh in Resources */,
 				4AD455C12A86B42B0046CF6D /* mutable-stylesheet.css in Resources */,
-				4AD455C52A86B42B0046CF6D /* replace.py in Resources */,
 				4AD455C22A86B42B0046CF6D /* shared.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
