@@ -442,7 +442,12 @@ class FacebookParser extends Parser {
 	 * @returns {Post[]}
 	 */
 	static getPosts() {
-		let postContainers = $(document).find('[aria-labelledby][aria-describedby][' + PROCESSED_INDICATOR + '!="true"]');
+		let postContainers;
+		if (window.location.host === "m.facebook.com") {
+			postContainers = $(document).find('[data-tracking-duration-id][class="m"][' + PROCESSED_INDICATOR + '!="true"]');
+		} else {
+			postContainers = $(document).find('[aria-labelledby][aria-describedby][' + PROCESSED_INDICATOR + '!="true"]');
+		}
 		let posts = [];
 		postContainers.each((index) => {
 			let postElement = postContainers[index];
