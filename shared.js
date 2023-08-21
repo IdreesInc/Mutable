@@ -258,6 +258,17 @@ class RedditPost extends Post {
 	}
 }
 
+class RedditMobilePost extends Post {
+	getPostText() {
+		return this.postElement.innerText;
+	}
+
+	getPostContents() {
+		const text = this.postText();
+		return text;
+	}
+}
+
 class FacebookPost extends Post {
 	getPostText() {
 		return this.postElement.innerText;
@@ -418,11 +429,22 @@ class RedditParser extends Parser {
 		} else {
 			let postContainers = $(document).find('[data-testid="post-container"][' + PROCESSED_INDICATOR + '!="true"]');
 			let posts = [];
-			postContainers.each((index) => {
-				let postElement = postContainers[index];
-				let post = new RedditPost(postElement);
-				posts.push(post);
-			});
+			if (postContainers.length === 0) {
+				// Mobile site (potentially)
+				postContainers = $(document).find('article[class^="Post "][' + PROCESSED_INDICATOR + '!="true"]');
+				postContainers.each((index) => {
+					let postElement = postContainers[index];
+					let post = new RedditMobilePost(postElement);
+					posts.push(post);
+				});
+			} else {
+				// Desktop site
+				postContainers.each((index) => {
+					let postElement = postContainers[index];
+					let post = new RedditPost(postElement);
+					posts.push(post);
+				});
+			}
 			return posts;
 		}
 	}
