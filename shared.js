@@ -444,7 +444,7 @@ class FacebookParser extends Parser {
 	static getPosts() {
 		let postContainers;
 		if (window.location.host === "m.facebook.com") {
-			postContainers = $(document).find('[data-tracking-duration-id][class="m"][' + PROCESSED_INDICATOR + '!="true"]');
+			postContainers = $(document).find('[data-tracking-duration-id][' + PROCESSED_INDICATOR + '!="true"]');
 		} else {
 			postContainers = $(document).find('[aria-labelledby][aria-describedby][' + PROCESSED_INDICATOR + '!="true"]');
 		}
