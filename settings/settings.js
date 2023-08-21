@@ -33,6 +33,12 @@ const addWordCancel = document.getElementById("add-word-cancel");
 /** @type {HTMLSelectElement} */
 // @ts-ignore
 const globalMuteAction = document.getElementById("global-mute-action");
+/** @type {HTMLElement} */
+// @ts-ignore
+const acknowledgementsWindow = document.getElementById("acknowledgements-window");
+/** @type {HTMLElement} */
+// @ts-ignore
+const acknowledgementsLink = document.getElementById("acknowledgements-link");
 
 let currentSettings = new Settings();
 
@@ -59,6 +65,9 @@ function init() {
 	document.addEventListener("mousemove", (event) => {
 		mouseRatio = event.clientY / window.innerHeight;
 		updateFoil(scrollRatio, mouseRatio);
+	});
+	acknowledgementsLink.addEventListener("click", () => {
+		acknowledgementsWindow.style.display = "block";
 	});
 	initModals();
 }

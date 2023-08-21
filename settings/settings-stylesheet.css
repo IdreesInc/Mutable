@@ -507,3 +507,17 @@ input:checked + .toggle-inner:before {
 	width: 100%;
 	margin-top: 12px;
 }
+
+#acknowledgements-window > .window-top-bar {
+	background: linear-gradient(180deg, #f4d7ff 0%, #FFF 100%);
+}
+
+#acknowledgements-window {
+	display: none;
+}
+
+#acknowledgements-link {
+	margin-bottom: 8px;
+	text-decoration: underline;
+	cursor: pointer;
+}
