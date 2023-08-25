@@ -330,9 +330,10 @@ input:checked + .toggle-inner:before {
 }
 
 .add-button-plus {
-	font-family: "Consolas";
-	font-size: 18px;
-	margin-left: 6px;
+	font-family: "Arial", "Helvetica", sans-serif;
+	font-size: 16px;
+	margin-left: 5px;
+	box-sizing: border-box;
 }
 
 .add-button-empty {
