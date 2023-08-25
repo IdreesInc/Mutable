@@ -237,37 +237,6 @@ class MastodonPost extends Post {
 	}
 }
 
-class RedditPost extends Post {
-	getPostText() {
-		return this.postElement.innerText;
-	}
-
-	getPostContents() {
-		const text = this.postText();
-		return text === null ? null : text.replace(this.authorName() ?? "", "").replace(this.authorHandle() ?? "", "");
-	}
-
-	getAuthorHandle() {
-		try {
-			return $(this.postElement).find('[data-testid="post_author_link"]').text();
-		} catch (ex) {
-			console.error(ex);
-			console.error("Could not find author handle");
-		}
-		return null;
-	}
-}
-
-class RedditMobilePost extends Post {
-	getPostText() {
-		return this.postElement.innerText;
-	}
-
-	getPostContents() {
-		const text = this.postText();
-		return text;
-	}
-}
 
 class FacebookPost extends Post {
 	getPostText() {
@@ -302,6 +271,13 @@ class Parser {
 	static brandColor = "#000000";
 
 	/**
+	 * Whether this parser is experimental and should be disabled by default.
+	 * @abstract
+	 * @type {boolean}
+	 */
+	static experimental = false;
+
+	/**
 	 * Whether this parser applies to the current page.
 	 * @abstract
 	 * @returns {boolean}
@@ -324,7 +300,28 @@ class Parser {
 	 * @returns {typeof Parser[]}
 	 */
 	static parsers() {
-		return [TwitterParser, RedditParser, FacebookParser, MastodonParser, BlueskyParser];
+		return [TwitterParser, RedditParser, FacebookParser, MastodonParser, BlueskyParser, UniversalParser];
+	}
+
+	/**
+	 * @param {string} id
+	 */
+	static getParserById(id) {
+		// TODO: Cache this
+		for (let parser of Parser.parsers()) {
+			if (parser.id === id) {
+				return parser;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param {string} id
+	 */
+	static isParserExperimental(id) {
+		const parser = Parser.getParserById(id);
+		return parser && parser.experimental;
 	}
 }
 
@@ -454,6 +451,38 @@ class RedditParser extends Parser {
 	}
 }
 
+class RedditPost extends Post {
+	getPostText() {
+		return this.postElement.innerText;
+	}
+
+	getPostContents() {
+		const text = this.postText();
+		return text === null ? null : text.replace(this.authorName() ?? "", "").replace(this.authorHandle() ?? "", "");
+	}
+
+	getAuthorHandle() {
+		try {
+			return $(this.postElement).find('[data-testid="post_author_link"]').text();
+		} catch (ex) {
+			console.error(ex);
+			console.error("Could not find author handle");
+		}
+		return null;
+	}
+}
+
+class RedditMobilePost extends Post {
+	getPostText() {
+		return this.postElement.innerText;
+	}
+
+	getPostContents() {
+		const text = this.postText();
+		return text;
+	}
+}
+
 class FacebookParser extends Parser {
 
 	static id = "facebook";
@@ -481,6 +510,73 @@ class FacebookParser extends Parser {
 			posts.push(post);
 		});
 		return posts;
+	}
+}
+
+class UniversalParser extends Parser {
+
+	static id = "universal-experimental";
+	static parserName = "Any Website";
+	static brandColor = "#e9ffe0";
+	static experimental = true;
+
+	static appliesToPage() {
+		// Ensure no other parser applies to this page
+		for (let parser of Parser.parsers()) {
+			if (parser.id != this.id && parser.appliesToPage()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * @returns {Post[]}
+	 */
+	static getPosts() {
+		// Using jQuery, get every leaf
+		// let postContainers = $(document).find("*" + '[' + PROCESSED_INDICATOR + '!="true"]').filter(function () {
+		// 	return $(this).children().length === 0;
+		// });
+		// Using jQuery, get every element with a text node
+		// let postContainers = $(document).find("*" + '[' + PROCESSED_INDICATOR + '!="true"]').filter(function () {
+		// 	return $(this).contents().filter(function () {
+		// 		return this.nodeType === 3;
+		// 	}).length > 0;
+		// });
+		// Using jQuery, get every leaf or element that has text aside from the contents of its children
+		let postContainers = $(document).find("*" + '[' + PROCESSED_INDICATOR + '!="true"]').filter(function () {
+			return $(this).contents().filter(function () {
+				return this.nodeType === 3;
+			}).text().trim().length > 0;
+		});
+		// If the element is a not a div, replace it with its parent
+		postContainers = postContainers.map(function () {
+			// If this is a span or custom element, replace it with its parent
+			let element = this;
+			while ((element.tagName.toLowerCase() === "span" || element.tagName.includes("-"))  && element.parentElement && element.parentElement.getAttribute(PROCESSED_INDICATOR) !== "true") {
+				element = element.parentElement;
+			} 
+			return element;
+		});
+		let posts = [];
+		postContainers.each((index) => {
+			let postElement = postContainers[index];
+			let post = new EverythingPost(postElement);
+			posts.push(post);
+		});
+		return posts;
+	}
+}
+
+class EverythingPost extends Post {
+	getPostText() {
+		return this.postElement.innerText;
+	}
+
+	getPostContents() {
+		const text = this.postText();
+		return text;
 	}
 }
 
@@ -629,11 +725,13 @@ class Settings {
 	/**
 	 * @param {Object<string, Group>} [groups]
 	 * @param {string[]} [disabledParsers]
+	 * @param {string[]} [enabledExperimentalParsers]
 	 * @param {string} [globalMuteAction]
 	 */
-	constructor(groups, disabledParsers, globalMuteAction="blur") {
+	constructor(groups, disabledParsers, enabledExperimentalParsers, globalMuteAction="blur") {
 		this.groups = groups ?? { "default": new Group("default", "Default Group", [])};
 		this.disabledParsers = disabledParsers ?? [];
+		this.enabledExperimentalParsers = enabledExperimentalParsers ?? [];
 		this.globalMuteAction = globalMuteAction;
 	}
 
@@ -649,8 +747,12 @@ class Settings {
 	 * @param {string} parserId
 	 */
 	disableParser(parserId) {
-		if (!this.disabledParsers.includes(parserId)) {
-			this.disabledParsers.push(parserId);
+		if (Parser.isParserExperimental(parserId)) {
+			this.enabledExperimentalParsers = this.enabledExperimentalParsers.filter((id) => id !== parserId);
+		} else {
+			if (!this.disabledParsers.includes(parserId)) {
+				this.disabledParsers.push(parserId);
+			}
 		}
 	}
 
@@ -658,14 +760,24 @@ class Settings {
 	 * @param {string} parserId
 	 */
 	enableParser(parserId) {
-		this.disabledParsers = this.disabledParsers.filter((id) => id !== parserId);
+		if (Parser.isParserExperimental(parserId)) {
+			if (!this.enabledExperimentalParsers.includes(parserId)) {
+				this.enabledExperimentalParsers.push(parserId);
+			}
+		} else {
+			this.disabledParsers = this.disabledParsers.filter((id) => id !== parserId);
+		}
 	}
 
 	/**
 	 * @param {string} parserId
 	 */
 	isDisabled(parserId) {
-		return this.disabledParsers.includes(parserId);
+		if (Parser.isParserExperimental(parserId)) {
+			return !this.enabledExperimentalParsers.includes(parserId);
+		} else {
+			return this.disabledParsers.includes(parserId);
+		}
 	}
 
 	/**
@@ -702,12 +814,18 @@ class Settings {
 			console.error("Missing or invalid disabledParsers property: " + JSON.stringify(json));
 			return null;
 		}
+
+		let enabledExperimentalParsers = json.enabledExperimentalParsers;
+		if (!Array.isArray(enabledExperimentalParsers)) {
+			console.error("Invalid enabledExperimentalParsers property: " + JSON.stringify(json));
+			enabledExperimentalParsers = undefined;
+		}
 		let globalMuteAction = json.globalMuteAction;
 		if (globalMuteAction === undefined || typeof globalMuteAction !== "string") {
 			console.warn("Missing or invalid globalMuteAction property: " + JSON.stringify(json));
 			globalMuteAction = undefined;
 		}
-		return new Settings(groups, disabledParsers, globalMuteAction);
+		return new Settings(groups, disabledParsers, enabledExperimentalParsers, globalMuteAction);
 	}
 }
 

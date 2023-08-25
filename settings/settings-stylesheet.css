@@ -150,8 +150,25 @@ html {
 	padding-left: 10px;
 }
 
-#websites-content > .website:not(:last-child) {
-	margin-bottom: 13px;
+#websites-content > * > .website:not(:last-child) {
+	margin-bottom: 8px;
+}
+
+#normal-parsers, #experimental-parsers {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+#experimental-parsers {
+	margin-top: 15px;
+	font-size: 18px;
+	text-align: center;
+}
+
+#experimental-parsers > span {
+	margin-bottom: 10px;
+	/* opacity: 0.5; */
 }
 
 /* #website-twitter {
@@ -174,6 +191,7 @@ html {
 	font-family: Epilogue;
 	font-size: 18px;
 	padding-top: 4px;
+	max-width: 60%;
 }
 
 .toggle-switch {
