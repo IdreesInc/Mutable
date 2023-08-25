@@ -434,7 +434,7 @@ class RedditParser extends Parser {
 				postContainers = $(document).find('article[class^="Post "][' + PROCESSED_INDICATOR + '!="true"]');
 				if (postContainers.length === 0) {
 					// Mobile site with new layout
-					postContainers = $(document).find('shreddit-post[' + PROCESSED_INDICATOR + '!="true"]');
+					postContainers = $(document).find('shreddit-feed-element > shreddit-post[' + PROCESSED_INDICATOR + '!="true"]');
 				}
 				postContainers.each((index) => {
 					let postElement = postContainers[index];
