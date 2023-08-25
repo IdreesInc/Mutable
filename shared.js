@@ -430,8 +430,12 @@ class RedditParser extends Parser {
 			let postContainers = $(document).find('[data-testid="post-container"][' + PROCESSED_INDICATOR + '!="true"]');
 			let posts = [];
 			if (postContainers.length === 0) {
-				// Mobile site (potentially)
+				// Mobile site
 				postContainers = $(document).find('article[class^="Post "][' + PROCESSED_INDICATOR + '!="true"]');
+				if (postContainers.length === 0) {
+					// Mobile site with new layout
+					postContainers = $(document).find('shreddit-post[' + PROCESSED_INDICATOR + '!="true"]');
+				}
 				postContainers.each((index) => {
 					let postElement = postContainers[index];
 					let post = new RedditMobilePost(postElement);

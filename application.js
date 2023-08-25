@@ -294,15 +294,17 @@ function initParsing() {
  */
 function parse() {
 	let posts;
+	let parsersLog = "";
 	for (let parser of Parser.parsers()) {
 		if (parser.appliesToPage() && !settings.isDisabled(parser.id)) {
 			posts = parser.getPosts();
+			parsersLog += `${parser.parserName} `;
 		}
 	}
 	if (!posts) {
 		return;
 	}
-	log(`Found ${posts.length} posts`)
+	log(`Found ${posts.length} posts on ${parsersLog}`);
 	for (let post of posts) {
 		post.postElement.setAttribute(PROCESSED_INDICATOR, "true");
 		// console.log(post.authorHandle());
