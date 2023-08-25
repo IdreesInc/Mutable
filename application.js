@@ -360,6 +360,12 @@ function hidePost(element, reason) {
 			if (element.classList.contains("mutable-blur")) {
 				element.classList.remove("mutable-blur");
 				event.stopPropagation();
+				// Remove from children too
+				for (let child of element.querySelectorAll(".mutable-blur")) {
+					if (child instanceof HTMLElement) {
+						child.classList.remove("mutable-blur");
+					}
+				}
 			}
 		});
 	} else if (settings.globalMuteAction === "blur-preview") {
@@ -369,6 +375,12 @@ function hidePost(element, reason) {
 			if (element.classList.contains("mutable-blur-explanation")) {
 				element.classList.remove("mutable-blur-explanation");
 				event.stopPropagation();
+				// Remove from children too
+				for (let child of element.querySelectorAll(".mutable-blur-explanation")) {
+					if (child instanceof HTMLElement) {
+						child.classList.remove("mutable-blur-explanation");
+					}
+				}
 			}
 		});
 	} else if (settings.globalMuteAction === "hide") {
@@ -378,33 +390,21 @@ function hidePost(element, reason) {
 		const kittenSrc = chrome.runtime.getURL(`./images/kittens/${kittens[getIndexFromBag(kittens.length)].name}.jpg`);
 		element.style.setProperty("--overlay-image", `url("${kittenSrc}")`);
 		element.addEventListener("click", function (event) {
-			if (element.classList.contains("mutable-image-overlay")) {
-				element.classList.remove("mutable-image-overlay");
-				element.style.setProperty("--overlay-image", "");
-				event.stopPropagation();
-			}
+			removeOverlay(element, event);
 		});
 	} else if (settings.globalMuteAction === "puppies") {
 		element.classList.add("mutable-image-overlay");
 		const puppySrc = chrome.runtime.getURL(`./images/puppies/${puppies[getIndexFromBag(puppies.length)].name}.jpg`);
 		element.style.setProperty("--overlay-image", `url("${puppySrc}")`);
 		element.addEventListener("click", function (event) {
-			if (element.classList.contains("mutable-image-overlay")) {
-				element.classList.remove("mutable-image-overlay");
-				element.style.setProperty("--overlay-image", "");
-				event.stopPropagation();
-			}
+			removeOverlay(element, event);
 		});
 	} else if (settings.globalMuteAction === "hedgehogs") {
 		element.classList.add("mutable-image-overlay");
 		const hedgehogSrc = chrome.runtime.getURL(`./images/hedgehogs/${hedgehogs[getIndexFromBag(hedgehogs.length)].name}.jpg`);
 		element.style.setProperty("--overlay-image", `url("${hedgehogSrc}")`);
 		element.addEventListener("click", function (event) {
-			if (element.classList.contains("mutable-image-overlay")) {
-				element.classList.remove("mutable-image-overlay");
-				element.style.setProperty("--overlay-image", "");
-				event.stopPropagation();
-			}
+			removeOverlay(element, event);
 		});
 	} else {
 		console.error(`Unknown global mute action, defaulting to 'blur': ${settings.globalMuteAction}`);
@@ -415,6 +415,25 @@ function hidePost(element, reason) {
 				event.stopPropagation();
 			}
 		});
+	}
+}
+
+/**
+ * @param {HTMLElement} element
+ * @param {MouseEvent} event
+ */
+function removeOverlay(element, event) {
+	if (element.classList.contains("mutable-image-overlay")) {
+		element.classList.remove("mutable-image-overlay");
+		element.style.setProperty("--overlay-image", "");
+		event.stopPropagation();
+		// Remove from children too
+		for (let child of element.querySelectorAll(".mutable-image-overlay")) {
+			if (child instanceof HTMLElement) {
+				child.classList.remove("mutable-image-overlay");
+				child.style.setProperty("--overlay-image", "");
+			}
+		}
 	}
 }
 

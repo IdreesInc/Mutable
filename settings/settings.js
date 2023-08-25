@@ -9,6 +9,12 @@ const groupsContainer = document.getElementById("groups-container");
 const websitesContent = document.getElementById("websites-content");
 /** @type {HTMLElement} */
 // @ts-ignore
+const normalParsers = document.getElementById("normal-parsers");
+/** @type {HTMLElement} */
+// @ts-ignore
+const experimentalParsers = document.getElementById("experimental-parsers");
+/** @type {HTMLElement} */
+// @ts-ignore
 const background = document.getElementById("background");
 /** @type {HTMLElement} */
 // @ts-ignore
@@ -75,7 +81,6 @@ function init() {
 function updateFoil(scrollRatio, mouseRatio) {
 	let ratio = scrollRatio * 0.5 + mouseRatio * 0.5;
 	background.style.backgroundPositionX  = `${ratio * 80}%`;
-	// TODO: Accredit kjpargeter
 }
 
 function initSettings() {
@@ -100,7 +105,11 @@ function initSettings() {
 		toggleSwitch.appendChild(toggleInner);
 		website.appendChild(toggleSwitch);
 		website.style.background = `linear-gradient(90deg, ${parser.brandColor} 0%, white 80%)`;
-		websitesContent.appendChild(website);
+		if (parser.experimental) {
+			experimentalParsers.appendChild(website);
+		} else {
+			normalParsers.appendChild(website);
+		}
 		/** @type {HTMLInputElement} */
 		// @ts-ignore
 		let checkbox = document.getElementById(`${id}-checkbox`);
