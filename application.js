@@ -360,6 +360,7 @@ function hidePost(element, reason) {
 			if (element.classList.contains("mutable-blur")) {
 				element.classList.remove("mutable-blur");
 				event.stopPropagation();
+				event.preventDefault();
 				// Remove from children too
 				for (let child of element.querySelectorAll(".mutable-blur")) {
 					if (child instanceof HTMLElement) {
@@ -375,6 +376,7 @@ function hidePost(element, reason) {
 			if (element.classList.contains("mutable-blur-explanation")) {
 				element.classList.remove("mutable-blur-explanation");
 				event.stopPropagation();
+				event.preventDefault();
 				// Remove from children too
 				for (let child of element.querySelectorAll(".mutable-blur-explanation")) {
 					if (child instanceof HTMLElement) {
@@ -413,6 +415,7 @@ function hidePost(element, reason) {
 			if (element.classList.contains("mutable-blur")) {
 				element.classList.remove("mutable-blur");
 				event.stopPropagation();
+				event.preventDefault();
 			}
 		});
 	}
@@ -427,6 +430,7 @@ function removeOverlay(element, event) {
 		element.classList.remove("mutable-image-overlay");
 		element.style.setProperty("--overlay-image", "");
 		event.stopPropagation();
+		event.preventDefault();
 		// Remove from children too
 		for (let child of element.querySelectorAll(".mutable-image-overlay")) {
 			if (child instanceof HTMLElement) {
