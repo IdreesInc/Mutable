@@ -273,7 +273,7 @@ function initParsing() {
 	// Every second, parse the page for new posts
 	setInterval(() => {
 		parse();
-	}, 1000);
+	}, 2500);
 	// Also parse whenever the page is scrolled (but only once per second)
 	let scrollTimeout = null;
 	document.addEventListener("wheel", () => {
@@ -294,17 +294,19 @@ function initParsing() {
  */
 function parse() {
 	let posts;
-	let parsersLog = "";
 	for (let parser of Parser.parsers()) {
 		if (parser.appliesToPage() && !settings.isDisabled(parser.id)) {
 			posts = parser.getPosts();
-			parsersLog += `${parser.parserName} `;
+			log(`Found ${posts.length} posts using ${parser.parserName}`);
+			if (posts.length === 0 && settings.useFallback && parser.applyFallback()) {
+				posts = parser.getFallbackParser().getPosts();
+				log(`Found ${posts.length} posts using fallback parser`);
+			}
 		}
 	}
 	if (!posts) {
 		return;
 	}
-	log(`Found ${posts.length} posts on ${parsersLog}`);
 	for (let post of posts) {
 		post.postElement.setAttribute(PROCESSED_INDICATOR, "true");
 		// console.log(post.authorHandle());

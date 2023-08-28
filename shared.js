@@ -296,6 +296,14 @@ class Parser {
 	}
 
 	/**
+	 * Whether the fallback should apply to the current context if this parser fails.
+	 * Should only be true if the parser would usually expect to apply to the current context.
+	 */
+	static applyFallback() {
+		return false;
+	}
+
+	/**
 	 * Get all parsers.
 	 * @returns {typeof Parser[]}
 	 */
@@ -314,6 +322,14 @@ class Parser {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Get the parser to apply if other parsers fail.
+	 * @returns {typeof Parser}
+	 */
+	static getFallbackParser() {
+		return FallbackParser;
 	}
 
 	/**
@@ -407,13 +423,14 @@ class RedditParser extends Parser {
 	static brandColor = "#fff0df";
 
 	static appliesToPage() {
-		return window.location.host === "www.reddit.com" || window.location.host === "old.reddit.com";
+		return window.location.host === "www.reddit.com" || window.location.host === "old.reddit.com" || window.location.host === "reddit.com";
 	}
 
 	/**
 	 * @returns {Post[]}
 	 */
 	static getPosts() {
+		return [];
 		if (window.location.host === "old.reddit.com") {
 			let postContainers = $(document).find('[' + PROCESSED_INDICATOR + '!="true"].thing');
 			let posts = [];
@@ -448,6 +465,17 @@ class RedditParser extends Parser {
 			}
 			return posts;
 		}
+	}
+
+	static applyFallback() {
+		// Format is "www.site.com/page" or "www.site.com/page/"
+		let url = location.pathname;
+		// Remove trailing "/"
+		if (url.endsWith("/")) {
+			url = url.substring(0, url.length - 1);
+		}
+		// Apply to home and subreddits but not comments
+		return url === "" || (url.startsWith("/r/") && !url.includes("/comments/"));
 	}
 }
 
@@ -554,7 +582,7 @@ class UniversalParser extends Parser {
 		postContainers = postContainers.map(function () {
 			// If this is a span or custom element, replace it with its parent
 			let element = this;
-			while ((element.tagName.toLowerCase() === "span" || element.tagName.includes("-"))  && element.parentElement && element.parentElement.getAttribute(PROCESSED_INDICATOR) !== "true") {
+			while (element.tagName.toLowerCase() === "span"  && element.parentElement && element.parentElement.getAttribute(PROCESSED_INDICATOR) !== "true") {
 				element = element.parentElement;
 			} 
 			return element;
@@ -562,14 +590,28 @@ class UniversalParser extends Parser {
 		let posts = [];
 		postContainers.each((index) => {
 			let postElement = postContainers[index];
-			let post = new EverythingPost(postElement);
+			let post = new UniversalPost(postElement);
 			posts.push(post);
 		});
 		return posts;
 	}
 }
 
-class EverythingPost extends Post {
+class FallbackParser extends UniversalParser {
+	static id = "fallback";
+	static parserName = "Fallback";
+	static brandColor = "#000";
+
+	static appliesToPage() {
+		// Check whether the page has ANY elements containing the PROCESSED_INDICATOR attribute
+		if (document.querySelector(`[${PROCESSED_INDICATOR}]`)) {
+			return false;
+		}
+		return true;
+	}
+}
+
+class UniversalPost extends Post {
 	getPostText() {
 		return this.postElement.innerText;
 	}
@@ -727,12 +769,14 @@ class Settings {
 	 * @param {string[]} [disabledParsers]
 	 * @param {string[]} [enabledExperimentalParsers]
 	 * @param {string} [globalMuteAction]
+	 * @param {boolean} [useFallback]
 	 */
-	constructor(groups, disabledParsers, enabledExperimentalParsers, globalMuteAction="blur") {
+	constructor(groups, disabledParsers, enabledExperimentalParsers, globalMuteAction, useFallback) {
 		this.groups = groups ?? { "default": new Group("default", "Default Group", [])};
 		this.disabledParsers = disabledParsers ?? [];
 		this.enabledExperimentalParsers = enabledExperimentalParsers ?? [];
-		this.globalMuteAction = globalMuteAction;
+		this.globalMuteAction = globalMuteAction ?? "blur";
+		this.useFallback = useFallback ?? true;
 	}
 
 	/**
@@ -825,7 +869,12 @@ class Settings {
 			console.warn("Missing or invalid globalMuteAction property: " + JSON.stringify(json));
 			globalMuteAction = undefined;
 		}
-		return new Settings(groups, disabledParsers, enabledExperimentalParsers, globalMuteAction);
+		let useFallback = json.useFallback;
+		if (typeof useFallback !== "boolean") {
+			console.error("Invalid useFallback property: " + JSON.stringify(json));
+			useFallback = undefined;
+		}
+		return new Settings(groups, disabledParsers, enabledExperimentalParsers, globalMuteAction, useFallback);
 	}
 }
 

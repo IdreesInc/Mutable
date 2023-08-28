@@ -45,6 +45,9 @@ const acknowledgementsWindow = document.getElementById("acknowledgements-window"
 /** @type {HTMLElement} */
 // @ts-ignore
 const acknowledgementsLink = document.getElementById("acknowledgements-link");
+/** @type {HTMLInputElement} */
+// @ts-ignore
+const fallbackToggle = document.getElementById("fallback");
 
 let currentSettings = new Settings();
 
@@ -78,11 +81,19 @@ function init() {
 	initModals();
 }
 
+/**
+ * Update the background foil position.
+ * @param {number} scrollRatio
+ * @param {number} mouseRatio
+ */
 function updateFoil(scrollRatio, mouseRatio) {
 	let ratio = scrollRatio * 0.5 + mouseRatio * 0.5;
 	background.style.backgroundPositionX  = `${ratio * 80}%`;
 }
 
+/**
+ * Initialize the settings page with the current settings when the page loads.
+ */
 function initSettings() {
 	for (let parser of Parser.parsers()) {
 		let id = parser.id;
@@ -122,9 +133,12 @@ function initSettings() {
 			updateSettings();
 		});
 	}
-	globalMuteAction.value = currentSettings.globalMuteAction;
 	globalMuteAction.addEventListener("change", () => {
 		currentSettings.globalMuteAction = globalMuteAction.value;
+		updateSettings();
+	});
+	fallbackToggle.addEventListener("change", () => {
+		currentSettings.useFallback = fallbackToggle.checked;
 		updateSettings();
 	});
 }
@@ -142,6 +156,9 @@ function updateCheckbox(parserId, value) {
 	}
 }
 
+/**
+ * Update the elements on the settings page to reflect the current settings.
+ */
 function renderSettings() {
 	for (let parser of Parser.parsers()) {
 		updateCheckbox(parser.id, !currentSettings.isDisabled(parser.id));
@@ -195,15 +212,22 @@ function renderSettings() {
 		groupElement.appendChild(groupContent);
 		groupsContainer.appendChild(groupElement);
 	}
+	globalMuteAction.value = currentSettings.globalMuteAction;
+	fallbackToggle.checked = currentSettings.useFallback;
 }
 
+/**
+ * Put the current settings into storage and re-render the settings page.
+ */
 function updateSettings() {
 	putSettings(currentSettings, () => {
 		renderSettings();
 	});
 }
 
-
+/**
+ * Initialize the modal window element event listeners.
+ */
 function initModals() {
 	addWordCancel.addEventListener("click", () => {
 		hideModals();
