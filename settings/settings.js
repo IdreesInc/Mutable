@@ -45,6 +45,9 @@ const acknowledgementsWindow = document.getElementById("acknowledgements-window"
 /** @type {HTMLElement} */
 // @ts-ignore
 const acknowledgementsLink = document.getElementById("acknowledgements-link");
+/** @type {HTMLInputElement} */
+// @ts-ignore
+const debugMode = document.getElementById("debug-mode");
 
 let currentSettings = new Settings();
 
@@ -122,9 +125,12 @@ function initSettings() {
 			updateSettings();
 		});
 	}
-	globalMuteAction.value = currentSettings.globalMuteAction;
 	globalMuteAction.addEventListener("change", () => {
 		currentSettings.globalMuteAction = globalMuteAction.value;
+		updateSettings();
+	});
+	debugMode.addEventListener("change", () => {
+		currentSettings.debugMode = debugMode.checked;
 		updateSettings();
 	});
 }
@@ -195,6 +201,7 @@ function renderSettings() {
 		groupElement.appendChild(groupContent);
 		groupsContainer.appendChild(groupElement);
 	}
+	debugMode.checked = currentSettings.debugMode;
 }
 
 function updateSettings() {

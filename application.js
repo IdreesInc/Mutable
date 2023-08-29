@@ -251,6 +251,19 @@ const hedgehogs = [
 /** @type {Settings} */
 let settings = new Settings();
 let shuffledBag = [];
+/** @type {HTMLElement|undefined} */
+let debugWindow;
+/** @type {HTMLElement|undefined} */
+let debugHost;
+/** @type {HTMLElement|undefined} */
+let debugParsers;
+/** @type {HTMLElement|undefined} */
+let debugTotalPosts;
+/** @type {HTMLElement|undefined} */
+let debugPostsMuted;
+
+let totalPostCount = 0;
+let totalPostsMuted = 0;
 
 init();
 
@@ -266,7 +279,78 @@ function init() {
 		log("Settings updated");
 		resetPosts();
 		settings = result;
+		if (settings.debugMode) {
+			createDebugWindow();
+		} else {
+			removeDebugWindow();
+		}
 	});
+}
+
+/**
+ * Create the debug window element.
+ */
+function createDebugWindow() {
+	if (document.getElementById("mutable-debug-window")) {
+		document.getElementById("mutable-debug-window")?.remove();
+	}
+	debugWindow = document.createElement("div");
+	debugWindow.id = "mutable-debug-window";
+	const title = document.createElement("div");
+	title.textContent = "Mutable Debug Window";
+	title.classList.add("mutable-debug-title");
+	debugWindow.appendChild(title);
+	debugHost = document.createElement("div");
+	debugHost.classList.add("mutable-debug-item");
+	debugWindow.appendChild(debugHost);
+	debugParsers = document.createElement("div");
+	debugParsers.classList.add("mutable-debug-item");
+	debugWindow.appendChild(debugParsers);
+	debugTotalPosts = document.createElement("div");
+	debugTotalPosts.classList.add("mutable-debug-item");
+	debugWindow.appendChild(debugTotalPosts);
+	debugPostsMuted = document.createElement("div");
+	debugPostsMuted.classList.add("mutable-debug-item");
+	debugWindow.appendChild(debugPostsMuted);
+	document.body.appendChild(debugWindow);
+	log("Debug window created");
+}
+
+/**
+ * Update the values in the debug window.
+ * @param {string} parserNames
+ */
+function updateDebugWindow(parserNames) {
+	if (!settings.debugMode) {
+		removeDebugWindow();
+		return;
+	}
+	if (!debugWindow) {
+		createDebugWindow();
+	}
+	if (debugHost) {
+		debugHost.textContent = "Host: " + window.location.hostname;
+	}
+	if (debugParsers) {
+		debugParsers.textContent = "Parsers: " + parserNames;
+	}
+	if (debugTotalPosts) {
+		debugTotalPosts.textContent = "Posts Found: " + totalPostCount;
+	}
+	if (debugPostsMuted) {
+		debugPostsMuted.textContent = "Posts Muted: " + totalPostsMuted;
+	}
+}
+
+/**
+ * Remove the debug window element.
+ */
+function removeDebugWindow() {
+	if (debugWindow) {
+		debugWindow.remove();
+		debugWindow = undefined;
+		log("Debug window removed");
+	}
 }
 
 function initParsing() {
@@ -293,28 +377,30 @@ function initParsing() {
  * Parse the page for posts and hide any that match the mute patterns.
  */
 function parse() {
-	let posts;
-	let parsersLog = "";
+	let posts = [];
+	let parsersApplied = [];
 	for (let parser of Parser.parsers()) {
 		if (parser.appliesToPage() && !settings.isDisabled(parser.id)) {
-			posts = parser.getPosts();
-			parsersLog += `${parser.parserName} `;
+			posts.push(...parser.getPosts());
+			parsersApplied.push(parser.parserName);
 		}
 	}
-	if (!posts) {
-		return;
-	}
-	log(`Found ${posts.length} posts on ${parsersLog}`);
-	for (let post of posts) {
-		post.postElement.setAttribute(PROCESSED_INDICATOR, "true");
-		// console.log(post.authorHandle());
-		// console.log(post.authorName());
-		// console.log(post.postContents());
-		let matchText = match(post);
-		if (matchText !== null) {
-			hidePost(post.postElement, matchText);
+	totalPostCount += posts.length;
+	if (parsersApplied.length > 0) {
+		log(`Found ${posts.length} posts on ${parsersApplied.join(", ")}`);
+		for (let post of posts) {
+			post.postElement.setAttribute(PROCESSED_INDICATOR, "true");
+			// console.log(post.authorHandle());
+			// console.log(post.authorName());
+			// console.log(post.postContents());
+			let matchText = match(post);
+			if (matchText !== null) {
+				hidePost(post.postElement, matchText);
+				totalPostsMuted++;
+			}
 		}
 	}
+	updateDebugWindow(parsersApplied.length > 0 ? parsersApplied.join(", ") : "none");
 }
 
 /**

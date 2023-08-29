@@ -407,14 +407,14 @@ class RedditParser extends Parser {
 	static brandColor = "#fff0df";
 
 	static appliesToPage() {
-		return window.location.host === "www.reddit.com" || window.location.host === "old.reddit.com";
+		return window.location.host === "reddit.com" || window.location.host === "www.reddit.com" || window.location.host === "old.reddit.com";
 	}
 
 	/**
 	 * @returns {Post[]}
 	 */
 	static getPosts() {
-		if (window.location.host === "old.reddit.com") {
+		if (window.location.host.includes("old.reddit.com")) {
 			let postContainers = $(document).find('[' + PROCESSED_INDICATOR + '!="true"].thing');
 			let posts = [];
 			postContainers.each((index) => {
@@ -727,12 +727,14 @@ class Settings {
 	 * @param {string[]} [disabledParsers]
 	 * @param {string[]} [enabledExperimentalParsers]
 	 * @param {string} [globalMuteAction]
+	 * @param {boolean} [debugMode]
 	 */
-	constructor(groups, disabledParsers, enabledExperimentalParsers, globalMuteAction="blur") {
+	constructor(groups, disabledParsers, enabledExperimentalParsers, globalMuteAction="blur", debugMode) {
 		this.groups = groups ?? { "default": new Group("default", "Default Group", [])};
 		this.disabledParsers = disabledParsers ?? [];
 		this.enabledExperimentalParsers = enabledExperimentalParsers ?? [];
 		this.globalMuteAction = globalMuteAction;
+		this.debugMode = debugMode ?? false;
 	}
 
 	/**
@@ -825,7 +827,12 @@ class Settings {
 			console.warn("Missing or invalid globalMuteAction property: " + JSON.stringify(json));
 			globalMuteAction = undefined;
 		}
-		return new Settings(groups, disabledParsers, enabledExperimentalParsers, globalMuteAction);
+		let debugMode = json.debugMode;
+		if (typeof debugMode !== "boolean") {
+			console.warn("Invalid debugMode property: " + JSON.stringify(json));
+			debugMode = undefined;
+		}
+		return new Settings(groups, disabledParsers, enabledExperimentalParsers, globalMuteAction, debugMode);
 	}
 }
 

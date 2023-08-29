@@ -3,7 +3,7 @@
 :root {
 	--border-radius: 20px;
 	--stroke: 2px;
-	--light-stroke: 1.5px;
+	--light-stroke: 2px;
 }
 
 html, body {
@@ -199,6 +199,7 @@ html {
 	position: relative;
 	display: inline-block;
 	width: 72px;
+	min-width: 72px;
 	height: 26px;
 	border: var(--stroke) solid black;
 	border-radius: 1000px;
@@ -389,7 +390,7 @@ input:checked + .toggle-inner:before {
 }
 
 .settings-toggle-inner::before {
-	height: 23px;
+	height: calc(20px + 2 * var(--light-stroke));
 	border-width: var(--light-stroke);
 	bottom: calc(-1 * var(--light-stroke));
 }
