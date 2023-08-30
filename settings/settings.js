@@ -201,6 +201,7 @@ function renderSettings() {
 		groupElement.appendChild(groupContent);
 		groupsContainer.appendChild(groupElement);
 	}
+	globalMuteAction.value = currentSettings.globalMuteAction;
 	debugMode.checked = currentSettings.debugMode;
 }
 
