@@ -818,7 +818,7 @@ class Settings {
 		}
 
 		let enabledExperimentalParsers = json.enabledExperimentalParsers;
-		if (!Array.isArray(enabledExperimentalParsers)) {
+		if (enabledExperimentalParsers !== undefined && !Array.isArray(enabledExperimentalParsers)) {
 			console.error("Invalid enabledExperimentalParsers property: " + JSON.stringify(json));
 			enabledExperimentalParsers = undefined;
 		}
