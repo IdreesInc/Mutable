@@ -62,6 +62,14 @@ body {
 	text-decoration: none;
 }
 
+#github a{
+	color: black;
+}
+
+#github {
+	margin-top: 10px;
+}
+
 #annotation {
 	font-size: 20px;
 	position: absolute;
