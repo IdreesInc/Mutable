@@ -117,6 +117,7 @@ function initSettings() {
 		// @ts-ignore
 		let checkbox = document.getElementById(`${id}-checkbox`);
 		checkbox.addEventListener("change", () => {
+			console.log("Change for " + id + " to " + checkbox.checked);
 			if (checkbox.checked) {
 				currentSettings.enableParser(id);
 			} else {

@@ -913,6 +913,10 @@ function putSettings(settings, onSuccess, onError) {
 			if (onError) {
 				onError();
 			}
+			chrome.storage.sync.getBytesInUse("settings", function (bytesInUse) {
+				console.log("Bytes in use: " + bytesInUse);
+				console.log(JSON.stringify(settings));
+			});
 		} else {
 			console.log("Settings saved successfully");
 			if (onSuccess) {
