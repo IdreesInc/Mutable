@@ -351,6 +351,10 @@ function removeDebugWindow() {
 		debugWindow = undefined;
 		log("Debug window removed");
 	}
+	// Remove the debug class from all posts
+	for (let post of document.querySelectorAll(".mutable-debug-post")) {
+		post.classList.remove("mutable-debug-post");
+	}
 }
 
 function initParsing() {
@@ -390,9 +394,12 @@ function parse() {
 		log(`Found ${posts.length} posts on ${parsersApplied.join(", ")}`);
 		for (let post of posts) {
 			post.postElement.setAttribute(PROCESSED_INDICATOR, "true");
-			// console.log(post.authorHandle());
-			// console.log(post.authorName());
-			// console.log(post.postContents());
+			if (settings.debugMode && !post.postElement.classList.contains("mutable-debug-post")) {
+				// console.log(post.authorHandle());
+				// console.log(post.authorName());
+				// console.log(post.postContents());
+				post.postElement.classList.add("mutable-debug-post");
+			}
 			let matchText = match(post);
 			if (matchText !== null) {
 				hidePost(post.postElement, matchText);

@@ -94,3 +94,9 @@
 #mutable-debug-window > :not(:last-child) {
 	margin-bottom: 5px;
 }
+
+.mutable-debug-post {
+	border-style: solid !important;
+	border-width: 2px !important;
+	border-image: linear-gradient(to bottom, #ff8ff0, #70f8ff, #81ff92) 30 !important;
+}
