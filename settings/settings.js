@@ -44,7 +44,7 @@ const globalMuteAction = document.getElementById("global-mute-action");
 const acknowledgementsWindow = document.getElementById("acknowledgements-window");
 /** @type {HTMLElement} */
 // @ts-ignore
-const acknowledgementsLink = document.getElementById("acknowledgements-link");
+const acknowledgements = document.getElementById("acknowledgements");
 /** @type {HTMLInputElement} */
 // @ts-ignore
 const debugMode = document.getElementById("debug-mode");
@@ -75,7 +75,7 @@ function init() {
 		mouseRatio = event.clientY / window.innerHeight;
 		updateFoil(scrollRatio, mouseRatio);
 	});
-	acknowledgementsLink.addEventListener("click", () => {
+	acknowledgements.addEventListener("click", () => {
 		acknowledgementsWindow.style.display = "block";
 	});
 	initModals();

@@ -440,6 +440,8 @@ input:checked + .toggle-inner:before {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	padding-top: 8px;
+	padding-bottom: 8px;
 }
 
 #settings-window > .window-top-bar {
@@ -537,8 +539,12 @@ input:checked + .toggle-inner:before {
 	display: none;
 }
 
-#acknowledgements-link {
+.acknowledgements-link {
 	margin-bottom: 8px;
 	text-decoration: underline;
 	cursor: pointer;
+}
+
+.acknowledgements-link a {
+	color: black;
 }
