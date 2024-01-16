@@ -836,59 +836,195 @@ class Settings {
 	}
 }
 
-function uuid() {
-	return crypto.randomUUID();
+function generateId() {
+	// From nanoid: https://github.com/ai/nanoid
+	// With length of 9, 1% chance of collision at 19 million IDs
+	let t = 9;
+	return crypto.getRandomValues(new Uint8Array(t)).reduce(((t,e)=>t+=(e&=63)<36?e.toString(36):e<62?(e-26).toString(36).toUpperCase():e>62?"-":"_"),"");
+}
+
+function convertOldSettings() {
 }
 
 /**
- * Get the serialized settings from the web extension sync storage.
- * @returns {Promise<object>} A promise that resolves to the serialized settings
+ * Get the metadata for the serialized settings from the web extension sync storage.
+ * @returns {Promise<object>} A promise that resolves to the metadata
  */
-function getSerializedSettings() {
+function getSettingsMetadata() {
 	return new Promise((resolve, reject) => {
-		chrome.storage.sync.get("settings", function (result) {
+		chrome.storage.sync.get("metadata", function (result) {
 			if (chrome.runtime.lastError) {
 				console.error(chrome.runtime.lastError);
 				reject(chrome.runtime.lastError);
 			} else {
-				resolve(result.settings);
+				resolve(result.metadata);
 			}
 		});
 	});
 }
 
 /**
- * Asynchronously get the settings from the web extension sync storage and update the settings variable.
+ * Asynchronously get the settings from the web extension sync storage.
+ * @param {boolean} deleteLegacy Whether to delete legacy settings after loading
  * @param {(arg0: Settings) => void} onSuccess The function to call when the settings have been loaded successfully
- * @param {() => void} [onError] The function to call when the settings could not be loaded
+ * @param {(msg: string) => void} [onFail] The function to call when the settings could not be loaded
  */
-function getSettings(onSuccess, onError) {
+function getSettings(deleteLegacy, onSuccess, onFail = (msg) => {console.error(msg)}) {
 	if (typeof chrome === "undefined") {
-		console.error("Chrome API not found");
-		if (onError) {
-			onError();
-		}
+		onFail("Chrome API not found");
 		return;
 	}
-	getSerializedSettings().then((result) => {
-		if (result) {
-			console.log("Serialized settings loaded from sync storage");
-			let restored = Settings.fromJson(result);
-			if (restored) {
-				console.log("Settings restored successfully");
-				onSuccess(restored);
+	getSettingsMetadata().then((result) => {
+		if (result !== undefined) {
+			if (result.v !== 1) {
+				onFail("Serialized settings version not supported, expected v1 but got " + result.v);
+			} else if (result.n === undefined) {
+				onFail("Serialized settings missing number of parts");
 			} else {
-				console.error("Settings could not be restored");
-				if (onError) {
-					onError();
+				// Retrieve the serialized settings in parts
+				let keysToGet = ["metadata"];
+				for (let i = 0; i < result.n; i++) {
+					keysToGet.push("p" + i);
 				}
+				chrome.storage.sync.get(keysToGet, function (result) {
+					if (chrome.runtime.lastError) {
+						console.error(chrome.runtime.lastError);
+						onFail("Error loading serialized settings from sync storage");
+					} else {
+						console.log("Serialized settings loaded from sync storage");
+						// Reconstruct the serialized settings
+						deserializeSettings(result, (deserialized) => {
+							let restored = Settings.fromJson(deserialized);
+							if (restored) {
+								console.log("Settings restored successfully");
+								onSuccess(restored);
+							} else {
+								onFail("Settings could not be restored");
+							}
+						}, onFail);
+					}
+				});	
 			}
 		} else {
-			console.error("Serialized settings not found");
-			if (onError) {
-				onError();
+			// Possible that the settings were not migrated yet
+			getLegacySettings((settings) => {
+				if (deleteLegacy) {
+					deleteSettings("settings");
+				}
+				onSuccess(settings);
+			}, onFail);
+		}
+	});
+}
+
+/**
+ * Asynchronously get legacy settings should they exist.
+ * @param {(arg0: Settings) => void} onSuccess
+ * @param {(msg: string) => void} onFail
+ */
+function getLegacySettings(onSuccess, onFail) {
+	chrome.storage.sync.get("settings", function (result) {
+		if (chrome.runtime.lastError) {
+			console.error(chrome.runtime.lastError);
+			onFail("Error loading legacy settings from sync storage")
+		} else if (result.settings === undefined) {
+			onFail("Legacy settings not found");
+		} else {
+			let restored = Settings.fromJson(result.settings);
+			if (restored) {
+				console.log("Legacy settings restored successfully");
+				onSuccess(restored);
+			} else {
+				onFail("Legacy settings could not be restored");
 			}
 		}
+	});
+}
+
+/**
+ * Compress and serialize the settings in parts to account for the 8KB limit on the web extension sync storage.
+ * @param {Settings} settings
+ * @param {(arg0: Object<string, any>) => void} cb The function to call with the serialized settings
+ */
+function serializeSettings(settings, cb) {
+	let serialized = JSON.stringify(settings);
+	// Compress with gzip using CompressionStream
+	const stream = new Blob([serialized], {
+		type: "application/json"
+	}).stream();
+	const compressionStream = stream.pipeThrough(new CompressionStream("gzip"));
+	const reader = compressionStream.getReader();
+	let compressed = new Uint8Array();
+	reader.read().then(function processResult(result) {
+		if (result.done) {
+			// Convert to base64
+			let base64 = btoa(String.fromCharCode(...compressed));
+			let parts  = [];
+			// Split into parts of 8KB or less (accounting for base64 overhead)
+			const PART_SIZE = 8000;
+			for (let i = 0; i < base64.length; i += PART_SIZE) {
+				parts.push(base64.substring(i, i + PART_SIZE));
+			}
+			let serialized = {
+				"metadata": {
+					"v": 1, // Version
+					"n": parts.length, // Number of parts
+				}
+			};
+			for (let i = 0; i < parts.length; i++) {
+				serialized["p" + i] = parts[i];
+			}
+			cb(serialized);
+			return;
+		}
+		compressed = new Uint8Array([...compressed, ...result.value]);
+		reader.read().then(processResult);
+	});
+}
+
+/**
+ * Decompress and deserialize the settings.
+ * @param {Object<string, any>} serialized
+ * @param {(arg0: string) => void} cb The function to call with the deserialized settings
+ * @param {(msg: string) => void} onFail The function to call when the settings could not be deserialized
+ */
+function deserializeSettings(serialized, cb, onFail) {
+	if (serialized.metadata === undefined) {
+		onFail("Serialized settings missing metadata");
+		return;
+	}
+	if (serialized.metadata.v !== 1) {
+		onFail("Serialized settings version not supported, expected v1 but got " + serialized.metadata.v);
+		return;
+	}
+	if (serialized.metadata.n === undefined) {
+		onFail("Serialized settings missing number of parts");
+		return;
+	}
+	let encoded = "";
+	for (let i = 0; i < serialized.metadata.n; i++) {
+		if (serialized["p" + i] === undefined) {
+			onFail("Serialized settings missing part " + i);
+			return;
+		}
+		encoded += serialized["p" + i];
+	}
+	let compressed = Uint8Array.from(atob(encoded), c => c.charCodeAt(0));
+	const stream = new Blob([compressed]).stream();
+	const decompressionStream = stream.pipeThrough(new DecompressionStream("gzip"));
+	const reader = decompressionStream.getReader();
+	let decompressed = [];
+	reader.read().then(function processResult(result) {
+		if (result.done) {
+			// Convert decompressed bytes to string
+			let decompressedString = new TextDecoder("utf-8").decode(new Uint8Array(decompressed));
+			// Parse JSON
+			let parsed = JSON.parse(decompressedString);
+			cb(parsed);
+			return;
+		}
+		decompressed = [...decompressed, ...result.value];
+		reader.read().then(processResult);
 	});
 }
 
@@ -896,32 +1032,51 @@ function getSettings(onSuccess, onError) {
  * Save the settings to the web extension sync storage.
  * @param {Settings} settings The settings to upload
  * @param {() => void} [onSuccess] The function to call when the settings have been saved successfully
- * @param {() => void} [onError] The function to call when the settings could not be saved
+ * @param {(msg: string) => void} [onFail] The function to call when the settings could not be saved
  */
-function putSettings(settings, onSuccess, onError) {
+function putSettings(settings, onSuccess, onFail = (msg) => {console.error(msg)}) {
 	if (typeof chrome === "undefined") {
-		console.error("Chrome API not found");
-		if (onError) {
-			onError();
-		}
+		onFail("Chrome API not found");
 		return;
 	}
-	chrome.storage.sync.set({ "settings": settings }, function () {
-		if (chrome.runtime.lastError) {
-			console.error("Settings could not be saved");
-			console.error(chrome.runtime.lastError);
-			if (onError) {
-				onError();
-			}
-			chrome.storage.sync.getBytesInUse("settings", function (bytesInUse) {
-				console.log("Bytes in use: " + bytesInUse);
-				console.log(JSON.stringify(settings));
+	try {
+		serializeSettings(settings, (serializedSettings) => {
+			chrome.storage.sync.set(serializedSettings, function () {
+				if (chrome.runtime.lastError) {
+					console.error(chrome.runtime.lastError);
+					onFail(("Settings could not be saved due to a browser storage sync error"));
+					chrome.storage.sync.getBytesInUse("settings", function (bytesInUse) {
+						console.log("Bytes in use: " + bytesInUse);
+						console.log(JSON.stringify(settings));
+					});
+				} else {
+					console.log("Settings saved successfully");
+					if (onSuccess) {
+						onSuccess();
+					}
+				}
 			});
+		});
+	} catch (ex) {
+		console.error(ex);
+		onFail("Failed to serialize settings");
+	}
+}
+
+/**
+ * Delete the settings from the web extension sync storage.
+ * @param {string} key The key of the settings to delete
+ */
+function deleteSettings(key) {
+	if (typeof chrome === "undefined") {
+		console.error("Chrome API not found");
+		return;
+	}
+	chrome.storage.sync.remove(key, function () {
+		if (chrome.runtime.lastError) {
+			console.error(chrome.runtime.lastError);
 		} else {
-			console.log("Settings saved successfully");
-			if (onSuccess) {
-				onSuccess();
-			}
+			console.log("Settings with key '" + key + "'deleted successfully");
 		}
 	});
 }
@@ -937,7 +1092,7 @@ function subscribeToSettings(callback) {
 	}
 	chrome.storage.onChanged.addListener((changes, areaName) => {
 		if (areaName === "sync" && changes["settings"]) {
-			getSettings(callback);
+			getSettings(false, callback);
 		}
 	});
 }
