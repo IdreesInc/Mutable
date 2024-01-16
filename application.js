@@ -399,6 +399,8 @@ function parse() {
 				// console.log(post.authorName());
 				// console.log(post.postContents());
 				post.postElement.classList.add("mutable-debug-post");
+				// Add tooltip with debug info
+				post.postElement.setAttribute("title", `Author: ${post.authorName()}\nHandle: ${post.authorHandle()}\nAlt: ${post.mediaAltText()}\nContents: ${post.postContents()?.substring(0, 100)}`);
 			}
 			let matchText = match(post);
 			if (matchText !== null) {

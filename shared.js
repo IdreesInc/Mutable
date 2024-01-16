@@ -1034,7 +1034,7 @@ function deserializeSettings(serialized, cb, onFail) {
  * @param {() => void} [onSuccess] The function to call when the settings have been saved successfully
  * @param {(msg: string) => void} [onFail] The function to call when the settings could not be saved
  */
-function putSettings(settings, onSuccess, onFail = (msg) => {console.error(msg)}) {
+function putSettings(settings, onSuccess= () => {}, onFail = (msg) => {console.error(msg)}) {
 	if (typeof chrome === "undefined") {
 		onFail("Chrome API not found");
 		return;
@@ -1051,9 +1051,7 @@ function putSettings(settings, onSuccess, onFail = (msg) => {console.error(msg)}
 					});
 				} else {
 					console.log("Settings saved successfully");
-					if (onSuccess) {
-						onSuccess();
-					}
+					onSuccess();
 				}
 			});
 		});
@@ -1091,7 +1089,7 @@ function subscribeToSettings(callback) {
 		return;
 	}
 	chrome.storage.onChanged.addListener((changes, areaName) => {
-		if (areaName === "sync" && changes["settings"]) {
+		if (areaName === "sync" && changes["metadata"]) {
 			getSettings(false, callback);
 		}
 	});
