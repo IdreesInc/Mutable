@@ -269,7 +269,7 @@ init();
 
 function init() {
 	log("Mutable has been loaded successfully!");
-	getSettings((result) => {
+	getSettings(true, (result) => {
 		settings = result;
 		initParsing();
 	}, () => {

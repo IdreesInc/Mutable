@@ -54,11 +54,12 @@ let currentSettings = new Settings();
 init();
 
 function init() {
-	getSettings((result) => {
+	getSettings(true, (result) => {
 		currentSettings = result;
 		initSettings();
 		renderSettings();
 	}, () => {
+		console.log("No settings found, creating default settings");
 		initSettings();
 		renderSettings();
 	});
@@ -117,6 +118,7 @@ function initSettings() {
 		// @ts-ignore
 		let checkbox = document.getElementById(`${id}-checkbox`);
 		checkbox.addEventListener("change", () => {
+			console.log("Change for " + id + " to " + checkbox.checked);
 			if (checkbox.checked) {
 				currentSettings.enableParser(id);
 			} else {
@@ -193,7 +195,7 @@ function renderSettings() {
 				if (keyword.trim().length === 0) {
 					return;
 				}
-				group.addPattern(new KeywordMute(uuid(), keyword, caseSensitive));
+				group.addPattern(new KeywordMute(generateId(), keyword, caseSensitive));
 				updateSettings();
 			});
 		});
