@@ -10,6 +10,12 @@ Take control of the websites you browse every day and eliminate the content you 
 
 ![updated-chrome](https://github.com/IdreesInc/Mutable/assets/4875804/deb34901-e614-4468-a406-7afcedd0dfba)
 
+## Platforms
+
+- [iOS and MacOS app](https://apps.apple.com/app/id6462700419)
+- [Chrome extension](https://chrome.google.com/webstore/detail/mutable/daniknejbbnjhfmcgolfpaedkpcfkaop)
+- [Microsoft Edge addon](https://microsoftedge.microsoft.com/addons/detail/mutable/eljpclpdfpmlicjlldnfeehfpfhljgbf)
+- [Firefox extension](https://addons.mozilla.org/en-US/firefox/addon/mutable/)
 
 ## Features
 
@@ -19,13 +25,5 @@ Take control of the websites you browse every day and eliminate the content you 
 - You can even replace posts with cute images of kittens, puppies, or hedgehogs for that additional serotonin!
 
 ![updated-chrome-preview](https://github.com/IdreesInc/Mutable/assets/4875804/71e0ee6f-c4b8-4ba4-97df-e619dab740ab)
-
-
-## Platforms
-
-- [iOS and MacOS app](https://apps.apple.com/app/id6462700419)
-- [Chrome extension](https://chrome.google.com/webstore/detail/mutable/daniknejbbnjhfmcgolfpaedkpcfkaop)
-- [Microsoft Edge addon](https://microsoftedge.microsoft.com/addons/detail/mutable/eljpclpdfpmlicjlldnfeehfpfhljgbf)
-- [Firefox extension](https://addons.mozilla.org/en-US/firefox/addon/mutable/)
 
 Mutable is still being developed and I would love to hear from you. For questions, comments, or concerns, feel free to reach out!
