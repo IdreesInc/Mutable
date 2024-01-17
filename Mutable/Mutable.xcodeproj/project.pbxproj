@@ -61,6 +61,8 @@
 		4ADD12642A8B02E900E822C9 /* foil.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4ADD12622A8B02E900E822C9 /* foil.jpg */; };
 		4ADD12662A8B0FC200E822C9 /* ios-extension-example.png in Resources */ = {isa = PBXBuildFile; fileRef = 4ADD12652A8B0FC200E822C9 /* ios-extension-example.png */; };
 		4ADD12672A8B0FC200E822C9 /* ios-extension-example.png in Resources */ = {isa = PBXBuildFile; fileRef = 4ADD12652A8B0FC200E822C9 /* ios-extension-example.png */; };
+		4AF487602B587EE3008FF546 /* pako.js in Resources */ = {isa = PBXBuildFile; fileRef = 4AF4875F2B587EE3008FF546 /* pako.js */; };
+		4AF487612B587EE3008FF546 /* pako.js in Resources */ = {isa = PBXBuildFile; fileRef = 4AF4875F2B587EE3008FF546 /* pako.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -145,6 +147,7 @@
 		4AD455B42A86B42B0046CF6D /* jquery.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = jquery.js; path = ../../jquery.js; sourceTree = "<group>"; };
 		4ADD12622A8B02E900E822C9 /* foil.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = foil.jpg; sourceTree = "<group>"; };
 		4ADD12652A8B0FC200E822C9 /* ios-extension-example.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ios-extension-example.png"; sourceTree = "<group>"; };
+		4AF4875F2B587EE3008FF546 /* pako.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = pako.js; path = ../../pako.js; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -292,6 +295,7 @@
 				4AD455B22A86B42B0046CF6D /* shared.js */,
 				4AD455B32A86B42B0046CF6D /* application.js */,
 				4AD455B42A86B42B0046CF6D /* jquery.js */,
+				4AF4875F2B587EE3008FF546 /* pako.js */,
 			);
 			name = Resources;
 			path = "Shared (Extension)";
@@ -465,6 +469,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4AF487602B587EE3008FF546 /* pako.js in Resources */,
 				4AD455D42A86B42B0046CF6D /* jquery.js in Resources */,
 				4AD455CF2A86B42B0046CF6D /* manifest.json in Resources */,
 				4AD455C82A86B42B0046CF6D /* images in Resources */,
@@ -480,6 +485,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4AF487612B587EE3008FF546 /* pako.js in Resources */,
 				4AD455C42A86B42B0046CF6D /* jquery.js in Resources */,
 				4AD455BF2A86B42B0046CF6D /* manifest.json in Resources */,
 				4AD455B82A86B42B0046CF6D /* images in Resources */,
@@ -705,7 +711,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.3.2;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
@@ -736,7 +742,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.3.2;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
@@ -774,7 +780,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.3.2;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
@@ -812,7 +818,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.3.2;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
@@ -847,7 +853,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.3.2;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
@@ -879,7 +885,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.3.2;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
@@ -915,7 +921,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.3.2;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
@@ -952,7 +958,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.3.2;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,

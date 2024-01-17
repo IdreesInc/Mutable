@@ -866,11 +866,11 @@ function getSettingsMetadata() {
 
 /**
  * Asynchronously get the settings from the web extension sync storage.
- * @param {boolean} deleteLegacy Whether to delete legacy settings after loading
  * @param {(arg0: Settings) => void} onSuccess The function to call when the settings have been loaded successfully
  * @param {(msg: string) => void} [onFail] The function to call when the settings could not be loaded
  */
-function getSettings(deleteLegacy, onSuccess, onFail = (msg) => {console.error(msg)}) {
+function getSettings(onSuccess, onFail = (msg) => {console.error(msg)}) {
+	console.log("Loading settings");
 	if (typeof chrome === "undefined") {
 		onFail("Chrome API not found");
 		return;
@@ -878,9 +878,9 @@ function getSettings(deleteLegacy, onSuccess, onFail = (msg) => {console.error(m
 	getSettingsMetadata().then((result) => {
 		if (result !== undefined) {
 			if (result.v !== 1) {
-				onFail("Serialized settings version not supported, expected v1 but got " + result.v);
+				onFail("Settings version not supported, expected v1 but got " + result.v);
 			} else if (result.n === undefined) {
-				onFail("Serialized settings missing number of parts");
+				onFail("Compressed settings missing number of parts");
 			} else {
 				// Retrieve the serialized settings in parts
 				let keysToGet = ["metadata"];
@@ -892,15 +892,13 @@ function getSettings(deleteLegacy, onSuccess, onFail = (msg) => {console.error(m
 						console.error(chrome.runtime.lastError);
 						onFail("Error loading serialized settings from sync storage");
 					} else {
-						console.log("Serialized settings loaded from sync storage");
 						// Reconstruct the serialized settings
 						deserializeSettings(result, (deserialized) => {
 							let restored = Settings.fromJson(deserialized);
 							if (restored) {
-								console.log("Settings restored successfully");
 								onSuccess(restored);
 							} else {
-								onFail("Settings could not be restored");
+								onFail("Compressed settings could not be deserialized");
 							}
 						}, onFail);
 					}
@@ -909,9 +907,6 @@ function getSettings(deleteLegacy, onSuccess, onFail = (msg) => {console.error(m
 		} else {
 			// Possible that the settings were not migrated yet
 			getLegacySettings((settings) => {
-				if (deleteLegacy) {
-					deleteSettings("settings");
-				}
 				onSuccess(settings);
 			}, onFail);
 		}
@@ -949,44 +944,30 @@ function getLegacySettings(onSuccess, onFail) {
  */
 function serializeSettings(settings, cb) {
 	let serialized = JSON.stringify(settings);
-	// Compress with gzip using CompressionStream
-	const stream = new Blob([serialized], {
-		type: "application/json"
-	}).stream();
-	const compressionStream = stream.pipeThrough(new CompressionStream("gzip"));
-	const reader = compressionStream.getReader();
-	let compressed = new Uint8Array();
-	reader.read().then(function processResult(result) {
-		if (result.done) {
-			// Convert to base64
-			let base64 = btoa(String.fromCharCode(...compressed));
-			let parts  = [];
-			// Split into parts of 8KB or less (accounting for base64 overhead)
-			const PART_SIZE = 8000;
-			for (let i = 0; i < base64.length; i += PART_SIZE) {
-				parts.push(base64.substring(i, i + PART_SIZE));
-			}
-			let serialized = {
-				"metadata": {
-					"v": 1, // Version
-					"n": parts.length, // Number of parts
-				}
-			};
-			for (let i = 0; i < parts.length; i++) {
-				serialized["p" + i] = parts[i];
-			}
-			cb(serialized);
-			return;
+	// @ts-ignore
+	const compressed = pako.deflate(serialized, { to: "string" });
+	const base64 = btoa(String.fromCharCode(...compressed));
+	const PART_SIZE = 8000;
+	let parts = [];
+	for (let i = 0; i < base64.length; i += PART_SIZE) {
+		parts.push(base64.substring(i, i + PART_SIZE));
+	}
+	let serializedSettings = {
+		"metadata": {
+			"v": 1, // Version
+			"n": parts.length, // Number of parts
 		}
-		compressed = new Uint8Array([...compressed, ...result.value]);
-		reader.read().then(processResult);
-	});
+	};
+	for (let i = 0; i < parts.length; i++) {
+		serializedSettings["p" + i] = parts[i];
+	}
+	cb(serializedSettings);
 }
 
 /**
  * Decompress and deserialize the settings.
  * @param {Object<string, any>} serialized
- * @param {(arg0: string) => void} cb The function to call with the deserialized settings
+ * @param {(json: object) => void} cb The function to call with the deserialized settings
  * @param {(msg: string) => void} onFail The function to call when the settings could not be deserialized
  */
 function deserializeSettings(serialized, cb, onFail) {
@@ -1010,23 +991,17 @@ function deserializeSettings(serialized, cb, onFail) {
 		}
 		encoded += serialized["p" + i];
 	}
-	let compressed = Uint8Array.from(atob(encoded), c => c.charCodeAt(0));
-	const stream = new Blob([compressed]).stream();
-	const decompressionStream = stream.pipeThrough(new DecompressionStream("gzip"));
-	const reader = decompressionStream.getReader();
-	let decompressed = [];
-	reader.read().then(function processResult(result) {
-		if (result.done) {
-			// Convert decompressed bytes to string
-			let decompressedString = new TextDecoder("utf-8").decode(new Uint8Array(decompressed));
-			// Parse JSON
-			let parsed = JSON.parse(decompressedString);
-			cb(parsed);
-			return;
-		}
-		decompressed = [...decompressed, ...result.value];
-		reader.read().then(processResult);
-	});
+	try {
+		const compressedData = atob(encoded);
+		const compressedArray = Uint8Array.from([...compressedData].map((char) => char.charCodeAt(0)));
+		//@ts-ignore
+		const decompressedArray = pako.inflate(compressedArray);
+		const decompressedString = new TextDecoder().decode(decompressedArray);
+		cb(JSON.parse(decompressedString));
+	} catch (ex) {
+		console.error(ex);
+		onFail("Failed to decompress serialized settings: " + ex);
+	}
 }
 
 /**
@@ -1067,6 +1042,7 @@ function putSettings(settings, onSuccess= () => {}, onFail = (msg) => {console.e
  * @param {string} key The key of the settings to delete
  */
 function deleteSettings(key) {
+	console.log("Deleting settings with key '" + key + "'");
 	if (typeof chrome === "undefined") {
 		console.error("Chrome API not found");
 		return;
@@ -1075,7 +1051,7 @@ function deleteSettings(key) {
 		if (chrome.runtime.lastError) {
 			console.error(chrome.runtime.lastError);
 		} else {
-			console.log("Settings with key '" + key + "'deleted successfully");
+			console.log("Settings with key '" + key + "' deleted successfully");
 		}
 	});
 }
@@ -1091,7 +1067,7 @@ function subscribeToSettings(callback) {
 	}
 	chrome.storage.onChanged.addListener((changes, areaName) => {
 		if (areaName === "sync" && changes["metadata"]) {
-			getSettings(false, callback);
+			getSettings(callback);
 		}
 	});
 }

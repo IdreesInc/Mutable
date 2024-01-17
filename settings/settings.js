@@ -50,15 +50,17 @@ const acknowledgements = document.getElementById("acknowledgements");
 const debugMode = document.getElementById("debug-mode");
 
 let currentSettings = new Settings();
+let deletedLegacySettings = false;
 
 init();
 
 function init() {
-	getSettings(true, (result) => {
+	getSettings((result) => {
 		currentSettings = result;
 		initSettings();
 		renderSettings();
-	}, () => {
+	}, (msg) => {
+		console.error(msg);
 		console.log("No settings found, creating default settings");
 		initSettings();
 		renderSettings();
@@ -209,6 +211,12 @@ function renderSettings() {
 
 function updateSettings() {
 	putSettings(currentSettings, () => {
+		if (!deletedLegacySettings) {
+			deletedLegacySettings = true;
+			// Remove legacy settings now that we have successfully saved the new settings
+			// TODO: Remove this in a few versions
+			deleteSettings("settings");
+		}
 		renderSettings();
 	});
 }

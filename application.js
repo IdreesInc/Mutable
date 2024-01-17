@@ -269,10 +269,13 @@ init();
 
 function init() {
 	log("Mutable has been loaded successfully!");
-	getSettings(true, (result) => {
+	getSettings((result) => {
+		console.log("Settings loaded");
 		settings = result;
 		initParsing();
-	}, () => {
+	}, (msg) => {
+		console.error(msg);
+		console.log("No settings found, creating default settings");
 		initParsing();
 	});
 	subscribeToSettings((result) => {
@@ -382,9 +385,11 @@ function initParsing() {
  */
 function parse() {
 	let posts = [];
+	/** @type {string[]} */
 	let parsersApplied = [];
 	for (let parser of Parser.parsers()) {
 		if (parser.appliesToPage() && !settings.isDisabled(parser.id)) {
+			console.log(`Applying parser: ${parser.parserName}`);
 			posts.push(...parser.getPosts());
 			parsersApplied.push(parser.parserName);
 		}
@@ -398,9 +403,11 @@ function parse() {
 				// console.log(post.authorHandle());
 				// console.log(post.authorName());
 				// console.log(post.postContents());
-				post.postElement.classList.add("mutable-debug-post");
-				// Add tooltip with debug info
-				post.postElement.setAttribute("title", `Author: ${post.authorName()}\nHandle: ${post.authorHandle()}\nAlt: ${post.mediaAltText()}\nContents: ${post.postContents()?.substring(0, 100)}`);
+				if (!parsersApplied.includes(UniversalParser.parserName)) {
+					post.postElement.classList.add("mutable-debug-post");
+					// Add tooltip with debug info
+					post.postElement.setAttribute("title", `Author: ${post.authorName()}\nHandle: ${post.authorHandle()}\nAlt: ${post.mediaAltText()}\nContents: ${post.postContents()?.substring(0, 100)}`);
+				}
 			}
 			let matchText = match(post);
 			if (matchText !== null) {
