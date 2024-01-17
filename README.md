@@ -12,10 +12,10 @@ Take control of the websites you browse every day and eliminate the content you 
 
 ## Platforms
 
-- [iOS and MacOS app](https://apps.apple.com/app/id6462700419)
-- [Chrome extension](https://chrome.google.com/webstore/detail/mutable/daniknejbbnjhfmcgolfpaedkpcfkaop)
-- [Microsoft Edge addon](https://microsoftedge.microsoft.com/addons/detail/mutable/eljpclpdfpmlicjlldnfeehfpfhljgbf)
-- [Firefox extension](https://addons.mozilla.org/en-US/firefox/addon/mutable/)
+- [iOS and MacOS App](https://apps.apple.com/app/id6462700419)
+- [Chrome Extension](https://chrome.google.com/webstore/detail/mutable/daniknejbbnjhfmcgolfpaedkpcfkaop)
+- [Microsoft Edge Addon](https://microsoftedge.microsoft.com/addons/detail/mutable/eljpclpdfpmlicjlldnfeehfpfhljgbf)
+- [Firefox Extension](https://addons.mozilla.org/en-US/firefox/addon/mutable/)
 
 ## Features
 
