@@ -705,13 +705,14 @@ class KeywordMute extends MutePattern {
 	 * @param {string} contents
 	 */
 	isMatch(contents) {
+		// Regex for word boundary here: https://stackoverflow.com/q/54585194/1330144
 		if (this.caseSensitive) {
 			// Case-sensitive match
-			let regex = new RegExp(`\\b${this.word}\\b`);
+			let regex = new RegExp(`(^|\\s|[.!\?,:;()[]])${this.word}(^|\\s|[.!\?,:;()[]])`);
 			return regex.test(contents);
 		} else {
 			// Case-insensitive match
-			let regex = new RegExp(`\\b${this.word}\\b`, "i");
+			let regex = new RegExp(`(^|\\s|[.!\?,:;()[]])${this.word}(^|\\s|[.!\?,:;()[]])`, "i");
 			return regex.test(contents);
 		}
 	}
