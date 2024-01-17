@@ -7,7 +7,8 @@ _*or replace with cute pics of 🐱, 🐶, or 🦔, up to you_
 
 Take control of the websites you browse every day and eliminate the content you don't want to see! Mutable helps you mute unwanted content across multiple sites at once. Just pick the keywords you want to hide and Mutable will blur, hide, or replace any posts it finds containing those terms!
 
-![chrome](https://github.com/IdreesInc/Mutable/assets/4875804/343607f2-f8b2-43bd-b43c-f3f1ee53af39)
+
+![updated-chrome](https://github.com/IdreesInc/Mutable/assets/4875804/deb34901-e614-4468-a406-7afcedd0dfba)
 
 
 ## Features
@@ -17,7 +18,8 @@ Take control of the websites you browse every day and eliminate the content you 
 - Choose between blurring out posts, blurring with a preview, or hiding them altogether
 - You can even replace posts with cute images of kittens, puppies, or hedgehogs for that additional serotonin!
 
-![chrome-preview](https://github.com/IdreesInc/Mutable/assets/4875804/f28a5c43-6e16-486e-bc67-6b5f840d9562)
+![updated-chrome-preview](https://github.com/IdreesInc/Mutable/assets/4875804/71e0ee6f-c4b8-4ba4-97df-e619dab740ab)
+
 
 ## Platforms
 
