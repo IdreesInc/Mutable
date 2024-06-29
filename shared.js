@@ -296,11 +296,18 @@ class Parser {
 	}
 
 	/**
-	 * Get all parsers.
+	 * @returns {typeof Parser[]}
+	 */
+	static specializedParsers() {
+		return [TwitterParser, RedditParser, FacebookParser, MastodonParser, BlueskyParser];
+	}
+
+	/**
+	 * Get all parsers
 	 * @returns {typeof Parser[]}
 	 */
 	static parsers() {
-		return [TwitterParser, RedditParser, FacebookParser, MastodonParser, BlueskyParser, UniversalParser];
+		return [...Parser.specializedParsers(), UniversalParser];
 	}
 
 	/**
@@ -332,7 +339,7 @@ class TwitterParser extends Parser {
 	static brandColor = "#DAF2FF";
 
 	static appliesToPage() {
-		return window.location.host === "twitter.com";
+		return window.location.host === "twitter.com" || window.location.host === "mobile.twitter.com" || window.location.host === "x.com";
 	}
 
 	/**
@@ -521,12 +528,6 @@ class UniversalParser extends Parser {
 	static experimental = true;
 
 	static appliesToPage() {
-		// Ensure no other parser applies to this page
-		for (let parser of Parser.parsers()) {
-			if (parser.id != this.id && parser.appliesToPage()) {
-				return false;
-			}
-		}
 		return true;
 	}
 

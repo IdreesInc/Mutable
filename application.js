@@ -268,7 +268,7 @@ let totalPostsMuted = 0;
 init();
 
 function init() {
-	log("Mutable has been loaded successfully!");
+	debug("Mutable has been loaded successfully!");
 	getSettings((result) => {
 		console.log("Settings loaded");
 		settings = result;
@@ -279,7 +279,7 @@ function init() {
 		initParsing();
 	});
 	subscribeToSettings((result) => {
-		log("Settings updated");
+		debug("Settings updated");
 		resetPosts();
 		settings = result;
 		if (settings.debugMode) {
@@ -316,7 +316,7 @@ function createDebugWindow() {
 	debugPostsMuted.classList.add("mutable-debug-item");
 	debugWindow.appendChild(debugPostsMuted);
 	document.body.appendChild(debugWindow);
-	log("Debug window created");
+	debug("Debug window created");
 }
 
 /**
@@ -352,7 +352,7 @@ function removeDebugWindow() {
 	if (debugWindow) {
 		debugWindow.remove();
 		debugWindow = undefined;
-		log("Debug window removed");
+		debug("Debug window removed");
 	}
 	// Remove the debug class from all posts
 	for (let post of document.querySelectorAll(".mutable-debug-post")) {
@@ -387,7 +387,7 @@ function parse() {
 	let posts = [];
 	/** @type {string[]} */
 	let parsersApplied = [];
-	for (let parser of Parser.parsers()) {
+	for (let parser of Parser.specializedParsers()) {
 		if (parser.appliesToPage() && !settings.isDisabled(parser.id)) {
 			console.log(`Applying parser: ${parser.parserName}`);
 			posts.push(...parser.getPosts());
@@ -395,8 +395,14 @@ function parse() {
 		}
 	}
 	totalPostCount += posts.length;
+	// If no specialized parser has found any posts on this site so far, use the universal parser
+	if (totalPostCount === 0 && !settings.isDisabled(UniversalParser.id)) {
+		debug(`Applying universal parser`);
+		posts.push(...UniversalParser.getPosts());
+		parsersApplied.push(UniversalParser.parserName);
+	}
 	if (parsersApplied.length > 0) {
-		log(`Found ${posts.length} posts on ${parsersApplied.join(", ")}`);
+		debug(`Found ${posts.length} posts on ${parsersApplied.join(", ")}`);
 		for (let post of posts) {
 			post.postElement.setAttribute(PROCESSED_INDICATOR, "true");
 			if (settings.debugMode && !post.postElement.classList.contains("mutable-debug-post")) {
@@ -597,6 +603,15 @@ function resetPosts() {
  */
 function log(message) {
 	console.log(`Mutable: ${message}`);
+}
+
+/**
+ * @param {any} message
+ */
+function debug(message) {
+	if (settings.debugMode) {
+		console.debug(`Mutable: ${message}`);
+	}
 }
 
 /**
