@@ -7,6 +7,12 @@ const groupsContainer = document.getElementById("groups-container");
 /** @type {HTMLElement} */
 // @ts-ignore
 const websitesContent = document.getElementById("websites-content");
+/** @type {HTMLInputElement} */
+// @ts-ignore
+const mutableEnabled = document.getElementById("mutable-enabled");
+/** @type {HTMLInputElement} */
+// @ts-ignore
+const toggleThisWebsite = document.getElementById("toggle-this-website");
 /** @type {HTMLElement} */
 // @ts-ignore
 const normalParsers = document.getElementById("normal-parsers");
@@ -90,45 +96,76 @@ function updateFoil(scrollRatio, mouseRatio) {
 }
 
 function initSettings() {
-	for (let parser of Parser.parsers()) {
-		let id = parser.id;
-		let name = parser.parserName;
-		let website = document.createElement("div");
-		website.classList.add("website");
-		let websiteName = document.createElement("div");
-		websiteName.classList.add("website-name");
-		websiteName.textContent = name;
-		website.appendChild(websiteName);
-		let toggleSwitch = document.createElement("label");
-		toggleSwitch.classList.add("toggle-switch");
-		let toggleCheckbox = document.createElement("input");
-		toggleCheckbox.id = `${id}-checkbox`;
-		toggleCheckbox.type = "checkbox";
-		toggleCheckbox.checked = true;
-		toggleSwitch.appendChild(toggleCheckbox);
-		let toggleInner = document.createElement("span");
-		toggleInner.classList.add("toggle-inner");
-		toggleSwitch.appendChild(toggleInner);
-		website.appendChild(toggleSwitch);
-		website.style.background = `linear-gradient(90deg, ${parser.brandColor} 0%, white 80%)`;
-		if (parser.experimental) {
-			experimentalParsers.appendChild(website);
+	// for (let parser of Parser.parsers()) {
+	// 	let id = parser.id;
+	// 	let name = parser.parserName;
+	// 	let website = document.createElement("div");
+	// 	website.classList.add("website");
+	// 	let websiteName = document.createElement("div");
+	// 	websiteName.classList.add("website-name");
+	// 	websiteName.textContent = name;
+	// 	website.appendChild(websiteName);
+	// 	let toggleSwitch = document.createElement("label");
+	// 	toggleSwitch.classList.add("toggle-switch");
+	// 	let toggleCheckbox = document.createElement("input");
+	// 	toggleCheckbox.id = `${id}-checkbox`;
+	// 	toggleCheckbox.type = "checkbox";
+	// 	toggleCheckbox.checked = true;
+	// 	toggleSwitch.appendChild(toggleCheckbox);
+	// 	let toggleInner = document.createElement("span");
+	// 	toggleInner.classList.add("toggle-inner");
+	// 	toggleSwitch.appendChild(toggleInner);
+	// 	website.appendChild(toggleSwitch);
+	// 	website.style.background = `linear-gradient(90deg, ${parser.brandColor} 0%, white 80%)`;
+	// 	if (parser.experimental) {
+	// 		experimentalParsers.appendChild(website);
+	// 	} else {
+	// 		normalParsers.appendChild(website);
+	// 	}
+	// 	/** @type {HTMLInputElement} */
+	// 	// @ts-ignore
+	// 	let checkbox = document.getElementById(`${id}-checkbox`);
+	// 	checkbox.addEventListener("change", () => {
+	// 		console.log("Change for " + id + " to " + checkbox.checked);
+	// 		if (checkbox.checked) {
+	// 			currentSettings.enableParser(id);
+	// 		} else {
+	// 			currentSettings.disableParser(id);
+	// 		}
+	// 		updateSettings();
+	// 	});
+	// }
+	mutableEnabled.checked = currentSettings.mutableEnabled;
+	mutableEnabled.addEventListener("change", () => {
+		currentSettings.mutableEnabled = mutableEnabled.checked;
+		updateSettings();
+	});
+	// Load toggle's initial state based on the current tab
+	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+		let currentTab = tabs[0];
+		if (currentTab.url !== undefined) {
+			let url = new URL(currentTab.url);
+			let hostname = url.hostname;
+			toggleThisWebsite.checked = currentSettings.isSiteEnabled(hostname);
+			toggleThisWebsite.disabled = false;
 		} else {
-			normalParsers.appendChild(website);
+			// Disable the toggle on pages like the browser settings
+			toggleThisWebsite.checked = false;
+			toggleThisWebsite.disabled = true;
 		}
-		/** @type {HTMLInputElement} */
-		// @ts-ignore
-		let checkbox = document.getElementById(`${id}-checkbox`);
-		checkbox.addEventListener("change", () => {
-			console.log("Change for " + id + " to " + checkbox.checked);
-			if (checkbox.checked) {
-				currentSettings.enableParser(id);
-			} else {
-				currentSettings.disableParser(id);
+	});
+	// Update the settings when the toggle is changed
+	toggleThisWebsite.addEventListener("change", () => {
+		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+			let currentTab = tabs[0];
+			if (currentTab.url !== undefined) {
+				let url = new URL(currentTab.url);
+				let hostname = url.hostname;
+				currentSettings.setSiteEnabled(hostname, toggleThisWebsite.checked);
+				updateSettings();
 			}
-			updateSettings();
 		});
-	}
+	});
 	globalMuteAction.addEventListener("change", () => {
 		currentSettings.globalMuteAction = globalMuteAction.value;
 		updateSettings();
@@ -139,23 +176,23 @@ function initSettings() {
 	});
 }
 
-/**
- * @param {string} parserId
- * @param {boolean} value
- */
-function updateCheckbox(parserId, value) {
-	/** @type {HTMLInputElement|undefined} */
-	// @ts-ignore
-	let checkbox = document.getElementById(`${parserId}-checkbox`);
-	if (checkbox) {
-		checkbox.checked = value;
-	}
-}
+// /**
+//  * @param {string} parserId
+//  * @param {boolean} value
+//  */
+// function updateCheckbox(parserId, value) {
+// 	/** @type {HTMLInputElement|undefined} */
+// 	// @ts-ignore
+// 	let checkbox = document.getElementById(`${parserId}-checkbox`);
+// 	if (checkbox) {
+// 		checkbox.checked = value;
+// 	}
+// }
 
 function renderSettings() {
-	for (let parser of Parser.parsers()) {
-		updateCheckbox(parser.id, !currentSettings.isDisabled(parser.id));
-	}
+	// for (let parser of Parser.parsers()) {
+	// 	updateCheckbox(parser.id, !currentSettings.isDisabled(parser.id));
+	// }
 	groupsContainer.innerHTML = "";
 	for (let group of currentSettings.getGroupsList()) {
 		let groupElement = document.createElement("div");

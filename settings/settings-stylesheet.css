@@ -140,7 +140,7 @@ html {
 	background: linear-gradient(180deg, #CBB9FF 0%, #FFF 100%);
 }
 
-.website {
+.top-level-toggle {
 	width: 100%;
 	border: var(--stroke) solid black;
 	display: flex;
@@ -151,7 +151,7 @@ html {
 	padding-left: 10px;
 }
 
-#websites-content > * > .website:not(:last-child) {
+#websites-content > * > .top-level-toggle:not(:last-child) {
 	margin-bottom: 8px;
 }
 
@@ -188,7 +188,7 @@ html {
 	background: linear-gradient(90deg, #ffd7e5 0%, white 80%); 
 } */
 
-.website-name {
+.toggle-name {
 	font-family: Epilogue;
 	font-size: 18px;
 	padding-top: 4px;

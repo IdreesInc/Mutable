@@ -384,19 +384,31 @@ function initParsing() {
  * Parse the page for posts and hide any that match the mute patterns.
  */
 function parse() {
+	let host = window.location.hostname;
+	if (!settings.mutableEnabled) {
+		debug("Mutable is disabled");
+		updateDebugWindow("Disabled globally");
+		return;
+	}
+	if (!settings.isSiteEnabled(host)) {
+		debug("Site is disabled");
+		updateDebugWindow("Disabled for site");
+		return;
+	}
 	let posts = [];
 	/** @type {string[]} */
 	let parsersApplied = [];
+	// First check if any specialized parser applies to this page
 	for (let parser of Parser.specializedParsers()) {
-		if (parser.appliesToPage() && !settings.isDisabled(parser.id)) {
-			console.log(`Applying parser: ${parser.parserName}`);
+		if (parser.appliesToPage()) {
+			debug(`Applying parser: ${parser.parserName}`);
 			posts.push(...parser.getPosts());
 			parsersApplied.push(parser.parserName);
 		}
 	}
 	totalPostCount += posts.length;
-	// If no specialized parser has found any posts on this site so far, use the universal parser
-	if (totalPostCount === 0 && !settings.isDisabled(UniversalParser.id)) {
+	// If the specialized parser hasn't found any posts on this site so far, use the universal parser
+	if (totalPostCount === 0) {
 		debug(`Applying universal parser`);
 		posts.push(...UniversalParser.getPosts());
 		parsersApplied.push(UniversalParser.parserName);

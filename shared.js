@@ -723,20 +723,31 @@ class KeywordMute extends MutePattern {
 	}
 }
 
+class WebsiteRule {
+	/**
+	 * @param {string} host
+	 * @param {boolean} enabled
+	 */
+	constructor(host, enabled) {
+		this.host = host;
+		this.enabled = enabled;
+	}
+}
+
 class Settings {
 	/**
 	 * @param {Object<string, Group>} [groups]
-	 * @param {string[]} [disabledParsers]
-	 * @param {string[]} [enabledExperimentalParsers]
 	 * @param {string} [globalMuteAction]
 	 * @param {boolean} [debugMode]
+	 * @param {Object<string, WebsiteRule>} [websiteRules]
+	 * @param {boolean} [mutableEnabled]
 	 */
-	constructor(groups, disabledParsers, enabledExperimentalParsers, globalMuteAction="blur", debugMode) {
+	constructor(groups, websiteRules, globalMuteAction="blur", debugMode, mutableEnabled=true) {
 		this.groups = groups ?? { "default": new Group("default", "Default Group", [])};
-		this.disabledParsers = disabledParsers ?? [];
-		this.enabledExperimentalParsers = enabledExperimentalParsers ?? [];
+		this.websiteRules = websiteRules ?? {};
 		this.globalMuteAction = globalMuteAction;
 		this.debugMode = debugMode ?? false;
+		this.mutableEnabled = mutableEnabled;
 	}
 
 	/**
@@ -748,41 +759,64 @@ class Settings {
 	}
 
 	/**
-	 * @param {string} parserId
+	 * Whether Mutable is enabled on the current website.
+	 * @param {string} host The host of the website
+	 * @returns {boolean}
 	 */
-	disableParser(parserId) {
-		if (Parser.isParserExperimental(parserId)) {
-			this.enabledExperimentalParsers = this.enabledExperimentalParsers.filter((id) => id !== parserId);
-		} else {
-			if (!this.disabledParsers.includes(parserId)) {
-				this.disabledParsers.push(parserId);
-			}
+	isSiteEnabled(host) {
+		if (host.startsWith("www.")) {
+			host = host.substring(4);
 		}
+		return this.websiteRules[host]?.enabled ?? true;
+	}
+
+	/**
+	 * @param {string} host
+	 * @param {boolean} enabled
+	 */
+	setSiteEnabled(host, enabled) {
+		if (host.startsWith("www.")) {
+			host = host.substring(4);
+		}
+		this.websiteRules[host] = new WebsiteRule(host, enabled);
 	}
 
 	/**
 	 * @param {string} parserId
 	 */
-	enableParser(parserId) {
-		if (Parser.isParserExperimental(parserId)) {
-			if (!this.enabledExperimentalParsers.includes(parserId)) {
-				this.enabledExperimentalParsers.push(parserId);
-			}
-		} else {
-			this.disabledParsers = this.disabledParsers.filter((id) => id !== parserId);
-		}
-	}
+	// disableParser(parserId) {
+	// 	if (Parser.isParserExperimental(parserId)) {
+	// 		this.enabledExperimentalParsers = this.enabledExperimentalParsers.filter((id) => id !== parserId);
+	// 	} else {
+	// 		if (!this.disabledParsers.includes(parserId)) {
+	// 			this.disabledParsers.push(parserId);
+	// 		}
+	// 	}
+	// }
 
 	/**
 	 * @param {string} parserId
 	 */
-	isDisabled(parserId) {
-		if (Parser.isParserExperimental(parserId)) {
-			return !this.enabledExperimentalParsers.includes(parserId);
-		} else {
-			return this.disabledParsers.includes(parserId);
-		}
-	}
+	// enableParser(parserId) {
+	// 	if (Parser.isParserExperimental(parserId)) {
+	// 		if (!this.enabledExperimentalParsers.includes(parserId)) {
+	// 			this.enabledExperimentalParsers.push(parserId);
+	// 		}
+	// 	} else {
+	// 		this.disabledParsers = this.disabledParsers.filter((id) => id !== parserId);
+	// 	}
+	// }
+
+	/**
+	 * @param {string} parserId
+	 */
+	// isDisabled(parserId) {
+	// 	if (Parser.isParserExperimental(parserId)) {
+	// 		return !this.enabledExperimentalParsers.includes(parserId);
+	// 	} else {
+	// 		return this.disabledParsers.includes(parserId);
+	// 	}
+	// }
 
 	/**
 	 * Deserialize settings from JSON.
@@ -813,28 +847,50 @@ class Settings {
 			console.error("Default group was not found");
 			return null;
 		}
-		let disabledParsers = json.disabledParsers;
-		if (disabledParsers === undefined || !Array.isArray(disabledParsers)) {
-			console.error("Missing or invalid disabledParsers property: " + JSON.stringify(json));
-			return null;
+
+		let websiteRules = json.websiteRules;
+		if (websiteRules === undefined || typeof websiteRules !== "object") {
+			websiteRules = {};
 		}
 
-		let enabledExperimentalParsers = json.enabledExperimentalParsers;
-		if (enabledExperimentalParsers !== undefined && !Array.isArray(enabledExperimentalParsers)) {
-			console.error("Invalid enabledExperimentalParsers property: " + JSON.stringify(json));
-			enabledExperimentalParsers = undefined;
+		// TODO: Remove this in the future once most users have migrated
+		if (json.disabledParsers !== undefined) {
+			// Import legacy disabled parsers and convert them to website rules
+			/** @type {string[]} */
+			let disabledParsers = json.disabledParsers;
+			for (let parserId of disabledParsers) {
+				if (parserId === "twitter") {
+					websiteRules["twitter.com"] = new WebsiteRule("twitter.com", false);
+					websiteRules["x.com"] = new WebsiteRule("x.com", false);
+				} else if (parserId === "reddit") {
+					websiteRules["reddit.com"] = new WebsiteRule("reddit.com", false);
+				} else if (parserId === "bluesky") {
+					websiteRules["bsky.app"] = new WebsiteRule("bsky.app", false);
+				} else if (parserId === "facebook") {
+					websiteRules["facebook.com"] = new WebsiteRule("facebook.com", false);
+				} 
+			}
 		}
+
 		let globalMuteAction = json.globalMuteAction;
 		if (globalMuteAction === undefined || typeof globalMuteAction !== "string") {
 			console.warn("Missing or invalid globalMuteAction property: " + JSON.stringify(json));
 			globalMuteAction = undefined;
 		}
+
 		let debugMode = json.debugMode;
 		if (typeof debugMode !== "boolean") {
 			console.warn("Invalid debugMode property: " + JSON.stringify(json));
 			debugMode = undefined;
 		}
-		return new Settings(groups, disabledParsers, enabledExperimentalParsers, globalMuteAction, debugMode);
+
+		let mutableEnabled = json.mutableEnabled;
+		if (mutableEnabled !== undefined && typeof mutableEnabled !== "boolean") {
+			console.warn("Invalid mutableEnabled property: " + JSON.stringify(json));
+			mutableEnabled = undefined;
+		}
+
+		return new Settings(groups, websiteRules, globalMuteAction, debugMode, mutableEnabled);
 	}
 }
 
@@ -843,9 +899,6 @@ function generateId() {
 	// With length of 9, 1% chance of collision at 19 million IDs
 	let t = 9;
 	return crypto.getRandomValues(new Uint8Array(t)).reduce(((t,e)=>t+=(e&=63)<36?e.toString(36):e<62?(e-26).toString(36).toUpperCase():e>62?"-":"_"),"");
-}
-
-function convertOldSettings() {
 }
 
 /**
