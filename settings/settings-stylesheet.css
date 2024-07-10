@@ -151,14 +151,15 @@ html {
 	padding-left: 10px;
 }
 
-#websites-content > * > .top-level-toggle:not(:last-child) {
-	margin-bottom: 8px;
-}
-
-#normal-parsers, #experimental-parsers {
+#parser-toggles {
 	width: 100%;
 	display: flex;
 	flex-direction: column;
+}
+
+/* Parser toggles every child but last */
+#parser-toggles > div:not(:last-child) {
+	margin-bottom: 8px;
 }
 
 #experimental-parsers {
@@ -252,8 +253,14 @@ input:checked + .toggle-inner:before {
 	background-color: #C3FFE2;
 }
 
+#custom-sites {
+	margin-top: 12px;
+}
+
 .group {
-	min-height: 100px;
+	max-height: 400px;
+	overflow-x: hidden;
+	overflow-y: scroll;
 	width: 100%;
 	border: var(--light-stroke) solid black;
 	box-sizing: border-box;
@@ -265,8 +272,13 @@ input:checked + .toggle-inner:before {
 	width: calc(100% + 2 * var(--light-stroke));
 	margin-top: calc(-1 * var(--light-stroke));
 	margin-left: calc(-1 * var(--light-stroke));
-	background: rgba(217, 217, 217, 0.40);
+	/* background: rgba(217, 217, 217, 0.40); */
+	background: linear-gradient(to bottom, #e7f7ff 0%, rgba(249, 249, 249, 0.00) 130%);
 	border: var(--light-stroke) solid black;
+	/* Border only on bottom */
+	border-top: none;
+	border-left: none;
+	border-right: none;
 	box-sizing: border-box;
 	border-radius: calc(var(--border-radius) * 0.5) calc(var(--border-radius) * 0.5) 0 0;
 	display: flex;
@@ -290,10 +302,19 @@ input:checked + .toggle-inner:before {
 }
 
 .group-element {
-	margin-bottom: 10px;
+	padding-top: 3px;
+	padding-bottom: 3px;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+}
+
+.group-element .element-delete {
+	opacity: 0;
+}
+
+.group-element:hover .element-delete {
+	opacity: 1;
 }
 
 .element-delete {
@@ -304,6 +325,7 @@ input:checked + .toggle-inner:before {
 	background-color: transparent;
 	border: none;
 	box-sizing: border-box;
+	cursor: pointer;
 }
 
 .element-delete:hover {
@@ -314,20 +336,33 @@ input:checked + .toggle-inner:before {
 	color: red;
 }
 
+.site-delete {
+	margin-left: auto;
+	margin-right: 5px;
+}
+
 .add-button {
-	width: 105px;
+	width: 110px;
 	border-radius: 0px 8px 8px 8px;
 	border: var(--light-stroke) solid #000;
 	background: #F9F9F9;
 	box-shadow: 1px 1px 0px 0px #000;
 	padding: 2px;
+	padding-top: 4px;
 	padding-left: 2px;
+	margin-top: 6px;
 	box-sizing: border-box;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	cursor: pointer;
 	user-select: none;
+	background: linear-gradient(to left, #f0fff6 0%, rgba(249, 249, 249, 0.00) 130%);
+
+}
+
+.add-button:hover {
+	background: #e7fff4;
 }
 
 .add-button-plus {

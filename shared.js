@@ -751,6 +751,14 @@ class Settings {
 	}
 
 	/**
+	 * Return the list of custom website rules.
+	 * @returns {WebsiteRule[]}
+	 */
+	getWebsiteRulesList() {
+		return Object.values(this.websiteRules);
+	}
+
+	/**
 	 * Return the list of groups.
 	 * @returns {Group[]}
 	 */
@@ -774,7 +782,7 @@ class Settings {
 	 * @param {string} host
 	 * @param {boolean} enabled
 	 */
-	setSiteEnabled(host, enabled) {
+	setWebsiteEnabled(host, enabled) {
 		if (host.startsWith("www.")) {
 			host = host.substring(4);
 		}
@@ -782,41 +790,14 @@ class Settings {
 	}
 
 	/**
-	 * @param {string} parserId
+	 * @param {string} host
 	 */
-	// disableParser(parserId) {
-	// 	if (Parser.isParserExperimental(parserId)) {
-	// 		this.enabledExperimentalParsers = this.enabledExperimentalParsers.filter((id) => id !== parserId);
-	// 	} else {
-	// 		if (!this.disabledParsers.includes(parserId)) {
-	// 			this.disabledParsers.push(parserId);
-	// 		}
-	// 	}
-	// }
-
-	/**
-	 * @param {string} parserId
-	 */
-	// enableParser(parserId) {
-	// 	if (Parser.isParserExperimental(parserId)) {
-	// 		if (!this.enabledExperimentalParsers.includes(parserId)) {
-	// 			this.enabledExperimentalParsers.push(parserId);
-	// 		}
-	// 	} else {
-	// 		this.disabledParsers = this.disabledParsers.filter((id) => id !== parserId);
-	// 	}
-	// }
-
-	/**
-	 * @param {string} parserId
-	 */
-	// isDisabled(parserId) {
-	// 	if (Parser.isParserExperimental(parserId)) {
-	// 		return !this.enabledExperimentalParsers.includes(parserId);
-	// 	} else {
-	// 		return this.disabledParsers.includes(parserId);
-	// 	}
-	// }
+	deleteSiteRule(host) {
+		if (host.startsWith("www.")) {
+			host = host.substring(4);
+		}
+		delete this.websiteRules[host];
+	}
 
 	/**
 	 * Deserialize settings from JSON.
