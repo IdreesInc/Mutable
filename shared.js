@@ -741,13 +741,15 @@ class Settings {
 	 * @param {boolean} [debugMode]
 	 * @param {Object<string, WebsiteRule>} [websiteRules]
 	 * @param {boolean} [mutableEnabled]
+	 * @param {boolean} [enabledByDefault]
 	 */
-	constructor(groups, websiteRules, globalMuteAction="blur", debugMode, mutableEnabled=true) {
+	constructor(groups, websiteRules, globalMuteAction="blur", debugMode, mutableEnabled=true, enabledByDefault=true) {
 		this.groups = groups ?? { "default": new Group("default", "Default Group", [])};
 		this.websiteRules = websiteRules ?? {};
 		this.globalMuteAction = globalMuteAction;
 		this.debugMode = debugMode ?? false;
 		this.mutableEnabled = mutableEnabled;
+		this.enabledByDefault = enabledByDefault;
 	}
 
 	/**
@@ -776,6 +778,18 @@ class Settings {
 			host = host.substring(4);
 		}
 		return this.websiteRules[host]?.enabled ?? true;
+	}
+
+	/**
+	 * Whether Mutable is explicitly enabled on the current website.
+	 * @param {string} host The host of the website
+	 * @returns 
+	 */
+	isSiteExplicitlyEnabled(host) {
+		if (host.startsWith("www.")) {
+			host = host.substring(4);
+		}
+		return this.websiteRules[host]?.enabled ?? false;
 	}
 
 	/**
@@ -871,7 +885,13 @@ class Settings {
 			mutableEnabled = undefined;
 		}
 
-		return new Settings(groups, websiteRules, globalMuteAction, debugMode, mutableEnabled);
+		let enabledByDefault = json.enabledByDefault;
+		if (enabledByDefault !== undefined && typeof enabledByDefault !== "boolean") {
+			console.warn("Invalid enabledByDefault property: " + JSON.stringify(json));
+			enabledByDefault = undefined;
+		}
+
+		return new Settings(groups, websiteRules, globalMuteAction, debugMode, mutableEnabled, enabledByDefault);
 	}
 }
 

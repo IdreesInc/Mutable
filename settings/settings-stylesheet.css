@@ -254,7 +254,7 @@ input:checked + .toggle-inner:before {
 }
 
 #custom-sites {
-	margin-top: 12px;
+	margin-top: 10px;
 }
 
 .group {
@@ -400,7 +400,7 @@ input:checked + .toggle-inner:before {
 .settings-text-input, .settings-block {
 	width: 100%;
 	min-height: 32px;
-	margin-top: 12px;
+	margin-top: 10px;
 	border: var(--light-stroke) solid black;
 	box-sizing: border-box;
 	font-family: Epilogue;
@@ -437,7 +437,7 @@ input:checked + .toggle-inner:before {
 .button-block {
 	width: 100%;
 	display: flex;
-	margin-top: 12px;
+	margin-top: 10px;
 }
 
 .submit-button, .cancel-button {
@@ -563,7 +563,7 @@ input:checked + .toggle-inner:before {
 	text-decoration: none;
 	color: black;
 	width: 100%;
-	margin-top: 12px;
+	margin-top: 10px;
 }
 
 #acknowledgements-window > .window-top-bar {

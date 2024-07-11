@@ -395,6 +395,11 @@ function parse() {
 		updateDebugWindow("Disabled for site");
 		return;
 	}
+	if (!settings.enabledByDefault && !settings.isSiteExplicitlyEnabled(host)) {
+		debug("Mutable is in whitelist mode and this site is not explicitly enabled");
+		updateDebugWindow("Not enabled for site");
+		return;
+	}
 	let posts = [];
 	/** @type {string[]} */
 	let parsersApplied = [];

@@ -54,6 +54,9 @@ const acknowledgements = document.getElementById("acknowledgements");
 /** @type {HTMLInputElement} */
 // @ts-ignore
 const debugMode = document.getElementById("debug-mode");
+/** @type {HTMLInputElement} */
+// @ts-ignore
+const enabledByDefault = document.getElementById("enabled-by-default");
 
 let currentSettings = new Settings();
 let deletedLegacySettings = false;
@@ -116,6 +119,10 @@ function initSettings() {
 		currentSettings.debugMode = debugMode.checked;
 		updateSettings();
 	});
+	enabledByDefault.addEventListener("change", () => {
+		currentSettings.enabledByDefault = enabledByDefault.checked;
+		updateSettings();
+	});
 }
 
 function renderSettings() {
@@ -130,7 +137,11 @@ function renderSettings() {
 		if (currentTab.url !== undefined) {
 			let url = new URL(currentTab.url);
 			let hostname = url.hostname;
-			toggleThisWebsite.checked = currentSettings.isSiteEnabled(hostname);
+			if (currentSettings.enabledByDefault) {
+				toggleThisWebsite.checked = currentSettings.isSiteEnabled(hostname);
+			} else {
+				toggleThisWebsite.checked = currentSettings.isSiteExplicitlyEnabled(hostname);
+			}
 			toggleThisWebsite.disabled = false;
 		} else {
 			// Disable the toggle on pages like the browser settings
@@ -242,6 +253,7 @@ function renderSettings() {
 	}
 	globalMuteAction.value = currentSettings.globalMuteAction;
 	debugMode.checked = currentSettings.debugMode;
+	enabledByDefault.checked = currentSettings.enabledByDefault;
 }
 
 function updateSettings() {
