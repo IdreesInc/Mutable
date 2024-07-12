@@ -249,6 +249,17 @@ class FacebookPost extends Post {
 	}
 }
 
+class ThreadsPost extends Post {
+	getPostText() {
+		return this.postElement.innerText;
+	}
+
+	getPostContents() {
+		const text = this.postText();
+		return text;
+	}
+}
+
 class Parser {
 
 	/**
@@ -296,11 +307,18 @@ class Parser {
 	}
 
 	/**
-	 * Get all parsers.
+	 * @returns {typeof Parser[]}
+	 */
+	static specializedParsers() {
+		return [TwitterParser, RedditParser, FacebookParser, MastodonParser, BlueskyParser, ThreadsParser];
+	}
+
+	/**
+	 * Get all parsers
 	 * @returns {typeof Parser[]}
 	 */
 	static parsers() {
-		return [TwitterParser, RedditParser, FacebookParser, MastodonParser, BlueskyParser, UniversalParser];
+		return [...Parser.specializedParsers(), UniversalParser];
 	}
 
 	/**
@@ -332,7 +350,7 @@ class TwitterParser extends Parser {
 	static brandColor = "#DAF2FF";
 
 	static appliesToPage() {
-		return window.location.host === "twitter.com";
+		return window.location.host === "twitter.com" || window.location.host === "mobile.twitter.com" || window.location.host === "x.com";
 	}
 
 	/**
@@ -513,6 +531,31 @@ class FacebookParser extends Parser {
 	}
 }
 
+class ThreadsParser extends Parser {
+
+	static id = "threads";
+	static parserName = "Threads";
+	static brandColor = "#d9ecff";
+
+	static appliesToPage() {
+		return window.location.host === "www.threads.net";
+	}
+
+	/**
+	 * @returns {Post[]}
+	 */
+	static getPosts() {
+		let postContainers = $(document).find('[data-pressable-container][' + PROCESSED_INDICATOR + '!="true"]');
+		let posts = [];
+		postContainers.each((index) => {
+			let postElement = postContainers[index];
+			let post = new ThreadsPost(postElement);
+			posts.push(post);
+		});
+		return posts;
+	}
+}
+
 class UniversalParser extends Parser {
 
 	static id = "universal-experimental";
@@ -521,12 +564,6 @@ class UniversalParser extends Parser {
 	static experimental = true;
 
 	static appliesToPage() {
-		// Ensure no other parser applies to this page
-		for (let parser of Parser.parsers()) {
-			if (parser.id != this.id && parser.appliesToPage()) {
-				return false;
-			}
-		}
 		return true;
 	}
 
@@ -534,16 +571,6 @@ class UniversalParser extends Parser {
 	 * @returns {Post[]}
 	 */
 	static getPosts() {
-		// Using jQuery, get every leaf
-		// let postContainers = $(document).find("*" + '[' + PROCESSED_INDICATOR + '!="true"]').filter(function () {
-		// 	return $(this).children().length === 0;
-		// });
-		// Using jQuery, get every element with a text node
-		// let postContainers = $(document).find("*" + '[' + PROCESSED_INDICATOR + '!="true"]').filter(function () {
-		// 	return $(this).contents().filter(function () {
-		// 		return this.nodeType === 3;
-		// 	}).length > 0;
-		// });
 		// Using jQuery, get every leaf or element that has text aside from the contents of its children
 		let postContainers = $(document).find("*" + '[' + PROCESSED_INDICATOR + '!="true"]').filter(function () {
 			return $(this).contents().filter(function () {
@@ -556,7 +583,7 @@ class UniversalParser extends Parser {
 			let element = this;
 			while ((element.tagName.toLowerCase() === "span" || element.tagName.includes("-"))  && element.parentElement && element.parentElement.getAttribute(PROCESSED_INDICATOR) !== "true") {
 				element = element.parentElement;
-			} 
+			}
 			return element;
 		});
 		let posts = [];
@@ -690,6 +717,14 @@ class MutePattern {
 	}
 }
 
+/**
+ * @param {string} string
+ * @returns {string}
+ */
+function escapeRegExp(string) {
+	return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+} 
+
 class KeywordMute extends MutePattern {
 	/**
 	 * @param {string} id
@@ -699,22 +734,15 @@ class KeywordMute extends MutePattern {
 		super(id, "keyword");
 		this.word = word;
 		this.caseSensitive = caseSensitive;
+		const PART = "|\\s|[.!\\?,:;\\-\\_\\+\\=(\\)[\\]{\\}\\'\\\"\\<\\>])";
+		this.regex = new RegExp("(^" + PART + escapeRegExp(this.word) + "($" + PART, this.caseSensitive ? "" : "i");
 	}
 
 	/**
 	 * @param {string} contents
 	 */
 	isMatch(contents) {
-		// Regex for word boundary here: https://stackoverflow.com/q/54585194/1330144
-		if (this.caseSensitive) {
-			// Case-sensitive match
-			let regex = new RegExp(`(^|\\s|[.!\?,:;()[]])${this.word}(^|\\s|[.!\?,:;()[]])`);
-			return regex.test(contents);
-		} else {
-			// Case-insensitive match
-			let regex = new RegExp(`(^|\\s|[.!\?,:;()[]])${this.word}(^|\\s|[.!\?,:;()[]])`, "i");
-			return regex.test(contents);
-		}
+		return this.regex.test(contents);
 	}
 
 	plaintext() {
@@ -722,20 +750,41 @@ class KeywordMute extends MutePattern {
 	}
 }
 
+class WebsiteRule {
+	/**
+	 * @param {string} host
+	 * @param {boolean} enabled
+	 */
+	constructor(host, enabled) {
+		this.host = host;
+		this.enabled = enabled;
+	}
+}
+
 class Settings {
 	/**
 	 * @param {Object<string, Group>} [groups]
-	 * @param {string[]} [disabledParsers]
-	 * @param {string[]} [enabledExperimentalParsers]
 	 * @param {string} [globalMuteAction]
 	 * @param {boolean} [debugMode]
+	 * @param {Object<string, WebsiteRule>} [websiteRules]
+	 * @param {boolean} [mutableEnabled]
+	 * @param {boolean} [enabledByDefault]
 	 */
-	constructor(groups, disabledParsers, enabledExperimentalParsers, globalMuteAction="blur", debugMode) {
+	constructor(groups, websiteRules, globalMuteAction="blur", debugMode, mutableEnabled=true, enabledByDefault=true) {
 		this.groups = groups ?? { "default": new Group("default", "Default Group", [])};
-		this.disabledParsers = disabledParsers ?? [];
-		this.enabledExperimentalParsers = enabledExperimentalParsers ?? [];
+		this.websiteRules = websiteRules ?? {};
 		this.globalMuteAction = globalMuteAction;
 		this.debugMode = debugMode ?? false;
+		this.mutableEnabled = mutableEnabled;
+		this.enabledByDefault = enabledByDefault;
+	}
+
+	/**
+	 * Return the list of custom website rules.
+	 * @returns {WebsiteRule[]}
+	 */
+	getWebsiteRulesList() {
+		return Object.values(this.websiteRules);
 	}
 
 	/**
@@ -747,40 +796,48 @@ class Settings {
 	}
 
 	/**
-	 * @param {string} parserId
+	 * Whether Mutable is enabled on the current website.
+	 * @param {string} host The host of the website
+	 * @returns {boolean}
 	 */
-	disableParser(parserId) {
-		if (Parser.isParserExperimental(parserId)) {
-			this.enabledExperimentalParsers = this.enabledExperimentalParsers.filter((id) => id !== parserId);
-		} else {
-			if (!this.disabledParsers.includes(parserId)) {
-				this.disabledParsers.push(parserId);
-			}
+	isSiteEnabled(host) {
+		if (host.startsWith("www.")) {
+			host = host.substring(4);
 		}
+		return this.websiteRules[host]?.enabled ?? true;
 	}
 
 	/**
-	 * @param {string} parserId
+	 * Whether Mutable is explicitly enabled on the current website.
+	 * @param {string} host The host of the website
+	 * @returns 
 	 */
-	enableParser(parserId) {
-		if (Parser.isParserExperimental(parserId)) {
-			if (!this.enabledExperimentalParsers.includes(parserId)) {
-				this.enabledExperimentalParsers.push(parserId);
-			}
-		} else {
-			this.disabledParsers = this.disabledParsers.filter((id) => id !== parserId);
+	isSiteExplicitlyEnabled(host) {
+		if (host.startsWith("www.")) {
+			host = host.substring(4);
 		}
+		return this.websiteRules[host]?.enabled ?? false;
 	}
 
 	/**
-	 * @param {string} parserId
+	 * @param {string} host
+	 * @param {boolean} enabled
 	 */
-	isDisabled(parserId) {
-		if (Parser.isParserExperimental(parserId)) {
-			return !this.enabledExperimentalParsers.includes(parserId);
-		} else {
-			return this.disabledParsers.includes(parserId);
+	setWebsiteEnabled(host, enabled) {
+		if (host.startsWith("www.")) {
+			host = host.substring(4);
 		}
+		this.websiteRules[host] = new WebsiteRule(host, enabled);
+	}
+
+	/**
+	 * @param {string} host
+	 */
+	deleteSiteRule(host) {
+		if (host.startsWith("www.")) {
+			host = host.substring(4);
+		}
+		delete this.websiteRules[host];
 	}
 
 	/**
@@ -812,28 +869,56 @@ class Settings {
 			console.error("Default group was not found");
 			return null;
 		}
-		let disabledParsers = json.disabledParsers;
-		if (disabledParsers === undefined || !Array.isArray(disabledParsers)) {
-			console.error("Missing or invalid disabledParsers property: " + JSON.stringify(json));
-			return null;
+
+		let websiteRules = json.websiteRules;
+		if (websiteRules === undefined || typeof websiteRules !== "object") {
+			websiteRules = {};
 		}
 
-		let enabledExperimentalParsers = json.enabledExperimentalParsers;
-		if (enabledExperimentalParsers !== undefined && !Array.isArray(enabledExperimentalParsers)) {
-			console.error("Invalid enabledExperimentalParsers property: " + JSON.stringify(json));
-			enabledExperimentalParsers = undefined;
+		// TODO: Remove this in the future once most users have migrated
+		if (json.disabledParsers !== undefined) {
+			// Import legacy disabled parsers and convert them to website rules
+			/** @type {string[]} */
+			let disabledParsers = json.disabledParsers;
+			for (let parserId of disabledParsers) {
+				if (parserId === "twitter") {
+					websiteRules["twitter.com"] = new WebsiteRule("twitter.com", false);
+					websiteRules["x.com"] = new WebsiteRule("x.com", false);
+				} else if (parserId === "reddit") {
+					websiteRules["reddit.com"] = new WebsiteRule("reddit.com", false);
+				} else if (parserId === "bluesky") {
+					websiteRules["bsky.app"] = new WebsiteRule("bsky.app", false);
+				} else if (parserId === "facebook") {
+					websiteRules["facebook.com"] = new WebsiteRule("facebook.com", false);
+				} 
+			}
 		}
+
 		let globalMuteAction = json.globalMuteAction;
 		if (globalMuteAction === undefined || typeof globalMuteAction !== "string") {
 			console.warn("Missing or invalid globalMuteAction property: " + JSON.stringify(json));
 			globalMuteAction = undefined;
 		}
+
 		let debugMode = json.debugMode;
 		if (typeof debugMode !== "boolean") {
 			console.warn("Invalid debugMode property: " + JSON.stringify(json));
 			debugMode = undefined;
 		}
-		return new Settings(groups, disabledParsers, enabledExperimentalParsers, globalMuteAction, debugMode);
+
+		let mutableEnabled = json.mutableEnabled;
+		if (mutableEnabled !== undefined && typeof mutableEnabled !== "boolean") {
+			console.warn("Invalid mutableEnabled property: " + JSON.stringify(json));
+			mutableEnabled = undefined;
+		}
+
+		let enabledByDefault = json.enabledByDefault;
+		if (enabledByDefault !== undefined && typeof enabledByDefault !== "boolean") {
+			console.warn("Invalid enabledByDefault property: " + JSON.stringify(json));
+			enabledByDefault = undefined;
+		}
+
+		return new Settings(groups, websiteRules, globalMuteAction, debugMode, mutableEnabled, enabledByDefault);
 	}
 }
 
@@ -842,9 +927,6 @@ function generateId() {
 	// With length of 9, 1% chance of collision at 19 million IDs
 	let t = 9;
 	return crypto.getRandomValues(new Uint8Array(t)).reduce(((t,e)=>t+=(e&=63)<36?e.toString(36):e<62?(e-26).toString(36).toUpperCase():e>62?"-":"_"),"");
-}
-
-function convertOldSettings() {
 }
 
 /**

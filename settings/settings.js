@@ -6,13 +6,19 @@
 const groupsContainer = document.getElementById("groups-container");
 /** @type {HTMLElement} */
 // @ts-ignore
+const customSites = document.getElementById("custom-sites");
+/** @type {HTMLElement} */
+// @ts-ignore
+const customSitesList = document.getElementById("custom-sites-list");
+/** @type {HTMLElement} */
+// @ts-ignore
 const websitesContent = document.getElementById("websites-content");
-/** @type {HTMLElement} */
+/** @type {HTMLInputElement} */
 // @ts-ignore
-const normalParsers = document.getElementById("normal-parsers");
-/** @type {HTMLElement} */
+const mutableEnabled = document.getElementById("mutable-enabled");
+/** @type {HTMLInputElement} */
 // @ts-ignore
-const experimentalParsers = document.getElementById("experimental-parsers");
+const toggleThisWebsite = document.getElementById("toggle-this-website");
 /** @type {HTMLElement} */
 // @ts-ignore
 const background = document.getElementById("background");
@@ -48,6 +54,9 @@ const acknowledgements = document.getElementById("acknowledgements");
 /** @type {HTMLInputElement} */
 // @ts-ignore
 const debugMode = document.getElementById("debug-mode");
+/** @type {HTMLInputElement} */
+// @ts-ignore
+const enabledByDefault = document.getElementById("enabled-by-default");
 
 let currentSettings = new Settings();
 let deletedLegacySettings = false;
@@ -90,45 +99,18 @@ function updateFoil(scrollRatio, mouseRatio) {
 }
 
 function initSettings() {
-	for (let parser of Parser.parsers()) {
-		let id = parser.id;
-		let name = parser.parserName;
-		let website = document.createElement("div");
-		website.classList.add("website");
-		let websiteName = document.createElement("div");
-		websiteName.classList.add("website-name");
-		websiteName.textContent = name;
-		website.appendChild(websiteName);
-		let toggleSwitch = document.createElement("label");
-		toggleSwitch.classList.add("toggle-switch");
-		let toggleCheckbox = document.createElement("input");
-		toggleCheckbox.id = `${id}-checkbox`;
-		toggleCheckbox.type = "checkbox";
-		toggleCheckbox.checked = true;
-		toggleSwitch.appendChild(toggleCheckbox);
-		let toggleInner = document.createElement("span");
-		toggleInner.classList.add("toggle-inner");
-		toggleSwitch.appendChild(toggleInner);
-		website.appendChild(toggleSwitch);
-		website.style.background = `linear-gradient(90deg, ${parser.brandColor} 0%, white 80%)`;
-		if (parser.experimental) {
-			experimentalParsers.appendChild(website);
-		} else {
-			normalParsers.appendChild(website);
-		}
-		/** @type {HTMLInputElement} */
-		// @ts-ignore
-		let checkbox = document.getElementById(`${id}-checkbox`);
-		checkbox.addEventListener("change", () => {
-			console.log("Change for " + id + " to " + checkbox.checked);
-			if (checkbox.checked) {
-				currentSettings.enableParser(id);
-			} else {
-				currentSettings.disableParser(id);
+	// Update the settings when the toggle is changed
+	toggleThisWebsite.addEventListener("change", () => {
+		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+			let currentTab = tabs[0];
+			if (currentTab.url !== undefined) {
+				let url = new URL(currentTab.url);
+				let hostname = url.hostname;
+				currentSettings.setWebsiteEnabled(hostname, toggleThisWebsite.checked);
+				updateSettings();
 			}
-			updateSettings();
 		});
-	}
+	});
 	globalMuteAction.addEventListener("change", () => {
 		currentSettings.globalMuteAction = globalMuteAction.value;
 		updateSettings();
@@ -137,25 +119,89 @@ function initSettings() {
 		currentSettings.debugMode = debugMode.checked;
 		updateSettings();
 	});
-}
-
-/**
- * @param {string} parserId
- * @param {boolean} value
- */
-function updateCheckbox(parserId, value) {
-	/** @type {HTMLInputElement|undefined} */
-	// @ts-ignore
-	let checkbox = document.getElementById(`${parserId}-checkbox`);
-	if (checkbox) {
-		checkbox.checked = value;
-	}
+	enabledByDefault.addEventListener("change", () => {
+		currentSettings.enabledByDefault = enabledByDefault.checked;
+		updateSettings();
+	});
 }
 
 function renderSettings() {
-	for (let parser of Parser.parsers()) {
-		updateCheckbox(parser.id, !currentSettings.isDisabled(parser.id));
+	mutableEnabled.checked = currentSettings.mutableEnabled;
+	mutableEnabled.addEventListener("change", () => {
+		currentSettings.mutableEnabled = mutableEnabled.checked;
+		updateSettings();
+	});
+	// Load toggle's initial state based on the current tab
+	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+		let currentTab = tabs[0];
+		if (currentTab.url !== undefined) {
+			let url = new URL(currentTab.url);
+			let hostname = url.hostname;
+			if (currentSettings.enabledByDefault) {
+				toggleThisWebsite.checked = currentSettings.isSiteEnabled(hostname);
+			} else {
+				toggleThisWebsite.checked = currentSettings.isSiteExplicitlyEnabled(hostname);
+			}
+			toggleThisWebsite.disabled = false;
+		} else {
+			// Disable the toggle on pages like the browser settings
+			toggleThisWebsite.checked = false;
+			toggleThisWebsite.disabled = true;
+		}
+	});
+	customSitesList.innerHTML = "";
+	const websiteRules = currentSettings.getWebsiteRulesList();
+	if (websiteRules.length === 0) {
+		customSites.style.display = "none";
+	} else {
+		customSites.style.display = "block";
 	}
+	// Sort the website rules by host in alphabetical order
+	websiteRules.sort((a, b) => {
+		return a.host.localeCompare(b.host);
+	});
+	const hostLabelMaxLength = 22;
+	for (let site of websiteRules) {
+		const siteElement = document.createElement("div");
+		siteElement.classList.add("group-element");
+		// Truncate the host if it's too long
+		let hostLabel = site.host;
+		if (hostLabel.length > hostLabelMaxLength) {
+			hostLabel = hostLabel.substring(0, hostLabelMaxLength) + "...";
+		}
+		siteElement.textContent = hostLabel;
+		const siteDelete = document.createElement("button");
+		siteDelete.classList.add("element-delete");
+		siteDelete.classList.add("site-delete");
+		siteDelete.innerText = "x";
+		if (siteDelete !== null) {
+			siteDelete.addEventListener("click", () => {
+				currentSettings.deleteSiteRule(site.host);
+				updateSettings();
+			});
+		}
+		siteElement.appendChild(siteDelete);
+		const siteToggle = document.createElement("label");
+		siteToggle.innerHTML = `
+			<label class="toggle-switch settings-toggle">
+				<input type="checkbox">
+				<span class="toggle-inner settings-toggle-inner"></span>
+			</label>
+		`;
+		const siteToggleInput = siteToggle.querySelector("input");
+		if (siteToggleInput === null) {
+			throw new Error("Could not find input element in site toggle");
+		}
+		siteToggleInput.checked = site.enabled;
+		siteToggleInput.addEventListener("change", () => {
+			site.enabled = siteToggleInput.checked;
+			updateSettings();
+		});
+		siteElement.appendChild(siteToggle);
+		customSitesList.appendChild(siteElement);
+	}
+
+	// Render the muted keywords
 	groupsContainer.innerHTML = "";
 	for (let group of currentSettings.getGroupsList()) {
 		let groupElement = document.createElement("div");
@@ -169,6 +215,7 @@ function renderSettings() {
 		groupElement.appendChild(groupTopBar);
 		let groupContent = document.createElement("div");
 		groupContent.classList.add("group-content");
+		groupContent.classList.add("mute-list");
 		for (let pattern of group.patterns) {
 			let groupElement = document.createElement("div");
 			groupElement.classList.add("group-element");
@@ -181,7 +228,7 @@ function renderSettings() {
 				updateSettings();
 			});
 			groupElement.appendChild(deleteButton);
-			groupContent.appendChild(groupElement);
+			groupContent.prepend(groupElement);
 		}
 		let addButton = document.createElement("div");
 		addButton.classList.add("add-button");
@@ -201,12 +248,13 @@ function renderSettings() {
 				updateSettings();
 			});
 		});
-		groupContent.appendChild(addButton);
+		groupContent.prepend(addButton);
 		groupElement.appendChild(groupContent);
 		groupsContainer.appendChild(groupElement);
 	}
 	globalMuteAction.value = currentSettings.globalMuteAction;
 	debugMode.checked = currentSettings.debugMode;
+	enabledByDefault.checked = currentSettings.enabledByDefault;
 }
 
 function updateSettings() {

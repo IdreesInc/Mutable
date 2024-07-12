@@ -1,6 +1,12 @@
 {
+  "scripts": {
+    "test": "concat -o built_tests.js ./shared.js ./tests/tests.js && mocha ./built_tests.js --require chai/register-assert.js ; rm ./built_tests.js"
+  },
   "devDependencies": {
+    "@types/chrome": "^0.0.242",
     "@types/jquery": "^3.5.16",
-    "@types/chrome": "^0.0.242"
+    "chai": "^5.1.1",
+    "concat": "^1.0.3",
+    "mocha": "^10.6.0"
   }
 }

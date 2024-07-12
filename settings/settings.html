@@ -27,17 +27,31 @@
 							</defs>
 						</svg>
 					</div>
-					<div class="window-title">websites</div>
+					<div class="window-title">website</div>
 					<div class="window-controls">
 						<div class="window-button left-window-button"></div>
 						<div class="window-button right-window-button"></div>
 					</div>
 				</div>
 				<div id="websites-content" class="window-content">
-					<div id="normal-parsers"></div>
-					<div id="experimental-parsers">
-						<span title="Caution: Mad Science Ahead!">experimental parsers</span>
-					</div>
+					<div id="parser-toggles">
+						<div class="top-level-toggle" style="background: linear-gradient(90deg, #DAFFE6 0%, white 80%);">
+							<div class="toggle-name">Use Mutable</div>
+							<label class="toggle-switch">
+								<input type="checkbox" id="mutable-enabled" checked>
+									<span class="toggle-inner"></span>
+								</input>
+							</label>
+						</div>
+						<div class="top-level-toggle" style="background: linear-gradient(90deg, #C8EBFF 0%, white 80%);">
+							<div class="toggle-name">This Website</div>
+							<label class="toggle-switch">
+								<input type="checkbox" id="toggle-this-website" checked>
+									<span class="toggle-inner"></span>
+								</input>
+							</label>
+						</div>
+					 </div>
 				</div>
 			</div>
 			<div id="mute-window" class="window">
@@ -60,19 +74,19 @@
 						<div class="group-top-bar">
 							<div class="group-name">Default Group</div>
 						</div>
-						<div class="group-content">
-							<div class="group-element">alpha
+						<div class="group-content mute-list">
+							<div class="add-button">
+								<div class="add-button-text">add word</div>
+								<div class="add-button-plus">+</div>
+							</div>
+							<div class="group-element">gamma
 								<button class="element-delete">x</button>
 							</div>
 							<div class="group-element">beta
 								<button class="element-delete">x</button>
 							</div>
-							<div class="group-element">gamma
+							<div class="group-element">alpha
 								<button class="element-delete">x</button>
-							</div>
-							<div class="add-button">
-								<div class="add-button-text">add word</div>
-								<div class="add-button-plus">+</div>
 							</div>
 						</div>
 					</div>
@@ -112,12 +126,42 @@
 					</div>
 					<div class="settings-block global-settings-block">
 						<div class="settings-text">
+							Enabled by Default
+						</div>
+						<label class="toggle-switch">
+							<input id="enabled-by-default" type="checkbox">
+							<span class="toggle-inner"></span>
+						</label>
+					</div>
+					<div class="settings-block global-settings-block">
+						<div class="settings-text">
 							Debug Mode
 						</div>
 						<label class="toggle-switch">
 							<input id="debug-mode" type="checkbox">
 							<span class="toggle-inner"></span>
 						</label>
+					</div>
+					<div id="custom-sites" class="group">
+						<div class="group-top-bar">
+							<div class="group-name">Custom Site Settings</div>
+						</div>
+						<div id="custom-sites-list" class="group-content">
+							<div class="group-element">alpha
+								<div style="display: inline">
+								<label class="toggle-switch settings-toggle">
+									<input type="checkbox">
+									<span class="toggle-inner settings-toggle-inner"></span>
+								</label>
+								</div>
+							</div>
+							<div class="group-element">beta
+								<button class="element-delete">x</button>
+							</div>
+							<div class="group-element">gamma
+								<button class="element-delete">x</button>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
