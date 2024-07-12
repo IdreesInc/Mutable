@@ -16,9 +16,10 @@
 	content: 'Muted by Mutable\A Contains: "' attr(data-mutable-match) '"';
 	white-space: pre-wrap;
 	box-sizing: border-box;
-	font-size: 18px;
+	font-size: 18px !important;
 	color: transparent;
-	font-family: "Helvetica", "Arial", sans-serif;
+	font-family: "Helvetica", "Arial", sans-serif !important;
+	font-weight: normal !important;
 	position: absolute;
 	display: flex;
 	align-items: center;
@@ -58,7 +59,7 @@
 	background-image: var(--overlay-image);
 	background-size: cover;
 	background-position: center;
-	z-index: 3;
+	z-index: 1001;
 }
 
 #mutable-debug-window {
