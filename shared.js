@@ -691,6 +691,14 @@ class MutePattern {
 	}
 }
 
+/**
+ * @param {string} string
+ * @returns {string}
+ */
+function escapeRegExp(string) {
+	return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+} 
+
 class KeywordMute extends MutePattern {
 	/**
 	 * @param {string} id
@@ -700,22 +708,18 @@ class KeywordMute extends MutePattern {
 		super(id, "keyword");
 		this.word = word;
 		this.caseSensitive = caseSensitive;
+		const PART = "(^|\\s|[.!\\?,:;\\-\\_\\+\\=(\\)[\\]{\\}])";
+		this.regex = new RegExp(PART + escapeRegExp(this.word) + PART, this.caseSensitive ? "" : "i");
 	}
 
 	/**
 	 * @param {string} contents
 	 */
 	isMatch(contents) {
-		// Regex for word boundary here: https://stackoverflow.com/q/54585194/1330144
-		if (this.caseSensitive) {
-			// Case-sensitive match
-			let regex = new RegExp(`(^|\\s|[.!\?,:;()[]])${this.word}(^|\\s|[.!\?,:;()[]])`);
-			return regex.test(contents);
-		} else {
-			// Case-insensitive match
-			let regex = new RegExp(`(^|\\s|[.!\?,:;()[]])${this.word}(^|\\s|[.!\?,:;()[]])`, "i");
-			return regex.test(contents);
+		if ((this.caseSensitive && contents === this.word) || (!this.caseSensitive && contents.toLowerCase() === this.word.toLowerCase())) {
+			return true;
 		}
+		return this.regex.test(contents);
 	}
 
 	plaintext() {
