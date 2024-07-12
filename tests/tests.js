@@ -115,5 +115,11 @@ describe('Parsing tests', () => {
 			const result = pattern.isMatch("I care for your well-being");
 			assert.isTrue(result);
 		});
+
+		it('Possessive word', () => {
+			const pattern = new KeywordMute("#test", "Idrees");
+			const result = pattern.isMatch("Idrees's car");
+			assert.isTrue(result);
+		});
 	});
 });
