@@ -708,8 +708,8 @@ class KeywordMute extends MutePattern {
 		super(id, "keyword");
 		this.word = word;
 		this.caseSensitive = caseSensitive;
-		const PART = "(^|\\s|[.!\\?,:;\\-\\_\\+\\=(\\)[\\]{\\}])";
-		this.regex = new RegExp(PART + escapeRegExp(this.word) + PART, this.caseSensitive ? "" : "i");
+		const PART = "|\\s|[.!\\?,:;\\-\\_\\+\\=(\\)[\\]{\\}\\'\\\"\\<\\>])";
+		this.regex = new RegExp("(^" + PART + escapeRegExp(this.word) + "($" + PART, this.caseSensitive ? "" : "i");
 	}
 
 	/**

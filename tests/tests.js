@@ -67,7 +67,7 @@ describe('Parsing tests', () => {
 
 		it('Surrounded by punctuation', () => {
 			const pattern = new KeywordMute("#test", "test", true);
-			const punctuation = ".,;:!?-_+=()[]{}";
+			const punctuation = ".,;:!?-_+=()[]{}'\"<>";
 			for (let i = 0; i < punctuation.length; i++) {
 				const result = pattern.isMatch(`${punctuation[i]}test${punctuation[i]}`);
 				assert.isTrue(result, "Failed on '" + punctuation[i] + "' with content: " + `${punctuation[i]}test${punctuation[i]}`);
@@ -90,6 +90,30 @@ describe('Parsing tests', () => {
 			const pattern = new KeywordMute("#test", "test", true);
 			const result = pattern.isMatch("attest");
 			assert.isFalse(result);
+		});
+
+		it('Mute phrase', () => {
+			const pattern = new KeywordMute("#test", "brown hen", true);
+			const result = pattern.isMatch("the brown hen laid an egg");
+			assert.isTrue(result);
+		});
+
+		it('Word with apostrophe', () => {
+			const pattern = new KeywordMute("#test", "don't", true);
+			const result = pattern.isMatch("I don't know");
+			assert.isTrue(result);
+		});
+
+		it('Word with hyphen', () => {
+			const pattern = new KeywordMute("#test", "well-being", true);
+			const result = pattern.isMatch("I care for your well-being dude");
+			assert.isTrue(result);
+		});
+
+		it('Word with hyphen at end of sentence', () => {
+			const pattern = new KeywordMute("#test", "well-being", true);
+			const result = pattern.isMatch("I care for your well-being");
+			assert.isTrue(result);
 		});
 	});
 });
