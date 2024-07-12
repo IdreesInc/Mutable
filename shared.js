@@ -716,9 +716,6 @@ class KeywordMute extends MutePattern {
 	 * @param {string} contents
 	 */
 	isMatch(contents) {
-		if ((this.caseSensitive && contents === this.word) || (!this.caseSensitive && contents.toLowerCase() === this.word.toLowerCase())) {
-			return true;
-		}
 		return this.regex.test(contents);
 	}
 
