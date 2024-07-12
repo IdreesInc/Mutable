@@ -249,6 +249,17 @@ class FacebookPost extends Post {
 	}
 }
 
+class ThreadsPost extends Post {
+	getPostText() {
+		return this.postElement.innerText;
+	}
+
+	getPostContents() {
+		const text = this.postText();
+		return text;
+	}
+}
+
 class Parser {
 
 	/**
@@ -299,7 +310,7 @@ class Parser {
 	 * @returns {typeof Parser[]}
 	 */
 	static specializedParsers() {
-		return [TwitterParser, RedditParser, FacebookParser, MastodonParser, BlueskyParser];
+		return [TwitterParser, RedditParser, FacebookParser, MastodonParser, BlueskyParser, ThreadsParser];
 	}
 
 	/**
@@ -520,6 +531,31 @@ class FacebookParser extends Parser {
 	}
 }
 
+class ThreadsParser extends Parser {
+
+	static id = "threads";
+	static parserName = "Threads";
+	static brandColor = "#d9ecff";
+
+	static appliesToPage() {
+		return window.location.host === "www.threads.net";
+	}
+
+	/**
+	 * @returns {Post[]}
+	 */
+	static getPosts() {
+		let postContainers = $(document).find('[data-pressable-container][' + PROCESSED_INDICATOR + '!="true"]');
+		let posts = [];
+		postContainers.each((index) => {
+			let postElement = postContainers[index];
+			let post = new ThreadsPost(postElement);
+			posts.push(post);
+		});
+		return posts;
+	}
+}
+
 class UniversalParser extends Parser {
 
 	static id = "universal-experimental";
@@ -535,16 +571,6 @@ class UniversalParser extends Parser {
 	 * @returns {Post[]}
 	 */
 	static getPosts() {
-		// Using jQuery, get every leaf
-		// let postContainers = $(document).find("*" + '[' + PROCESSED_INDICATOR + '!="true"]').filter(function () {
-		// 	return $(this).children().length === 0;
-		// });
-		// Using jQuery, get every element with a text node
-		// let postContainers = $(document).find("*" + '[' + PROCESSED_INDICATOR + '!="true"]').filter(function () {
-		// 	return $(this).contents().filter(function () {
-		// 		return this.nodeType === 3;
-		// 	}).length > 0;
-		// });
 		// Using jQuery, get every leaf or element that has text aside from the contents of its children
 		let postContainers = $(document).find("*" + '[' + PROCESSED_INDICATOR + '!="true"]').filter(function () {
 			return $(this).contents().filter(function () {
@@ -557,7 +583,7 @@ class UniversalParser extends Parser {
 			let element = this;
 			while ((element.tagName.toLowerCase() === "span" || element.tagName.includes("-"))  && element.parentElement && element.parentElement.getAttribute(PROCESSED_INDICATOR) !== "true") {
 				element = element.parentElement;
-			} 
+			}
 			return element;
 		});
 		let posts = [];

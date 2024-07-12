@@ -258,9 +258,7 @@ input:checked + .toggle-inner:before {
 }
 
 .group {
-	max-height: 400px;
 	overflow-x: hidden;
-	overflow-y: scroll;
 	width: 100%;
 	border: var(--light-stroke) solid black;
 	box-sizing: border-box;
@@ -299,6 +297,12 @@ input:checked + .toggle-inner:before {
 	flex-direction: column;
 	padding: 12px;
 	padding-right: 6px;
+	max-height: 340px;
+	overflow-y: scroll;
+}
+
+.mute-list {
+	flex-direction: column-reverse;
 }
 
 .group-element {

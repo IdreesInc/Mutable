@@ -215,6 +215,7 @@ function renderSettings() {
 		groupElement.appendChild(groupTopBar);
 		let groupContent = document.createElement("div");
 		groupContent.classList.add("group-content");
+		groupContent.classList.add("mute-list");
 		for (let pattern of group.patterns) {
 			let groupElement = document.createElement("div");
 			groupElement.classList.add("group-element");
@@ -227,7 +228,7 @@ function renderSettings() {
 				updateSettings();
 			});
 			groupElement.appendChild(deleteButton);
-			groupContent.appendChild(groupElement);
+			groupContent.prepend(groupElement);
 		}
 		let addButton = document.createElement("div");
 		addButton.classList.add("add-button");
@@ -247,7 +248,7 @@ function renderSettings() {
 				updateSettings();
 			});
 		});
-		groupContent.appendChild(addButton);
+		groupContent.prepend(addButton);
 		groupElement.appendChild(groupContent);
 		groupsContainer.appendChild(groupElement);
 	}

@@ -19,8 +19,8 @@ Take control of the websites you browse every day and eliminate the content you 
 
 ## Features
 
-- Control what you see (and what you don't) across multiple social media sites at once!
-- Create keyword mute lists that work across Twitter/X, Facebook, Mastodon, Reddit, and Bluesky
+- Control what you see (and what you don't) across the entire web!
+- Create keyword mute lists that work across all social media sites, including Twitter/X, Facebook, Mastodon, Reddit, Threads, and Bluesky
 - Choose between blurring out posts, blurring with a preview, or hiding them altogether
 - You can even replace posts with cute images of kittens, puppies, or hedgehogs for that additional serotonin!
 
