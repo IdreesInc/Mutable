@@ -26,3 +26,8 @@ layout: "project"
     url="https://addons.mozilla.org/en-US/firefox/addon/mutable/"
     text="firefox extension"
 %}
+
+{% include link.html
+	url="https://socials.idreesinc.com"
+	text="follow for updates"
+%}
