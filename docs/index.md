@@ -1,4 +1,5 @@
 ---
+window_title: "Get Mutable - The Smart Content Blocker"
 title: "Mutable"
 subtitle: "hide* content across the web and save your sanity"
 annotation: "*or replace with cute pics of 🐱, 🐶, or 🦔, up to you"
