@@ -2,12 +2,12 @@
 	"manifest_version": 3,
 	"name": "Mutable - Customizable Content Filtering",
 	"description": "Improve your browsing experience by muting keywords across the web! Now open source!",
-	"version": "2.0.0",
+	"version": "2.2.0",
 	"homepage_url": "https://idreesinc.com",
 	"icons": {
-		"48": "icons/foil-48.png",
-		"96": "icons/foil-96.png",
-		"128": "icons/foil-128.png"
+		"48": "icons/transparent/48x48x1.png",
+		"96": "icons/transparent/96x96x1.png",
+		"128": "icons/transparent/128x128x1.png"
 	},
 	"content_scripts": [
 	  {
@@ -20,7 +20,8 @@
 		"default_popup": "settings/settings.html"
 	},
 	"permissions": [
-		"storage"
+		"storage",
+		"activeTab"
 	],
 	"web_accessible_resources": [
 		{

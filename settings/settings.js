@@ -57,6 +57,30 @@ const debugMode = document.getElementById("debug-mode");
 /** @type {HTMLInputElement} */
 // @ts-ignore
 const enabledByDefault = document.getElementById("enabled-by-default");
+/** @type {HTMLElement} */
+// @ts-ignore
+const importSettings = document.getElementById("import-settings");
+/** @type {HTMLElement} */
+// @ts-ignore
+const exportSettings = document.getElementById("export-settings");
+/** @type {HTMLElement} */
+// @ts-ignore
+const promptModal = document.getElementById("prompt-modal");
+/** @type {HTMLElement} */
+// @ts-ignore
+const promptTitle = document.getElementById("prompt-title");
+/** @type {HTMLElement} */
+// @ts-ignore
+const promptText = document.getElementById("prompt-text");
+/** @type {HTMLInputElement} */
+// @ts-ignore
+const promptInput = document.getElementById("prompt-input");
+/** @type {HTMLElement} */
+// @ts-ignore
+const promptSubmit = document.getElementById("prompt-submit");
+/** @type {HTMLElement} */
+// @ts-ignore
+const promptCancel = document.getElementById("prompt-cancel");
 
 let currentSettings = new Settings();
 let deletedLegacySettings = false;
@@ -89,6 +113,30 @@ function init() {
 	});
 	acknowledgements.addEventListener("click", () => {
 		acknowledgementsWindow.style.display = "block";
+	});
+	importSettings.addEventListener("click", () => {
+		displayPrompt("import settings", "Paste the settings JSON into the input below", "OK", "Cancel", (value) => {
+			try {
+				let parsed = JSON.parse(value);
+				let newSettings = Settings.fromJson(parsed);
+				if (newSettings === null) {
+					displayAlert("invalid settings", "The imported settings are invalid");
+					return;
+				}
+				displayConfirm("confirm import", "The imported settings include " + newSettings.getPatternCount() + " pattern(s), press OK to confirm", (didConfirm) => {
+					if (didConfirm) {
+						currentSettings = newSettings;
+						updateSettings();
+					}
+				});
+			} catch (e) {
+				displayAlert("invalid settings", "The imported settings were formatted incorrectly:\n" + e.message);
+			}
+		}, () => {}, "Paste JSON settings here");
+	});
+	exportSettings.addEventListener("click", () => {
+		let encodedSettings = stringifySettings(currentSettings);
+		displayPrompt("export settings", "Copy the settings JSON below", "OK", "", () => {}, undefined, "Settings JSON", encodedSettings);
 	});
 	initModals();
 }
@@ -160,7 +208,7 @@ function renderSettings() {
 	websiteRules.sort((a, b) => {
 		return a.host.localeCompare(b.host);
 	});
-	const hostLabelMaxLength = 22;
+	const hostLabelMaxLength = 16;
 	for (let site of websiteRules) {
 		const siteElement = document.createElement("div");
 		siteElement.classList.add("group-element");
@@ -169,6 +217,8 @@ function renderSettings() {
 		if (hostLabel.length > hostLabelMaxLength) {
 			hostLabel = hostLabel.substring(0, hostLabelMaxLength) + "...";
 		}
+		// Hovering over the host will show the full host
+		siteElement.title = site.host;
 		siteElement.textContent = hostLabel;
 		const siteDelete = document.createElement("button");
 		siteDelete.classList.add("element-delete");
@@ -294,6 +344,8 @@ function initModals() {
  * @param {((keyword: string, caseSensitive: boolean) => void)} submitCallback
  */
 function displayAddWordModal(submitCallback) {
+	hideModals();
+
 	addWordInput.value = "";
 	addWordCaseSensitive.checked = false;
 	addWordSubmitCallback = submitCallback;
@@ -304,7 +356,83 @@ function displayAddWordModal(submitCallback) {
 	addWordInput.focus();
 }
 
+/**
+ * @param {string} title
+ * @param {string} text
+ */
+function displayAlert(title, text) {
+	displayPrompt(title, text, "OK", "", () => {}, () => {});
+}
+
+/**
+ * @param {string} title
+ * @param {string} text
+ * @param {((confirm: boolean) => void)} callback
+ */
+function displayConfirm(title, text, callback) {
+	displayPrompt(title, text, "OK", "Cancel", () => {
+		callback(true);
+	}, () => {
+		callback(false);
+	});
+}
+
+/**
+ * @param {string} title
+ * @param {string} text
+ * @param {string} [submitText]
+ * @param {string} [cancelText]
+ * @param {((input: string) => void)} [onSubmit]
+ * @param {() => void|null} [onCancel]
+ * @param {string} [placeholder]
+ */
+function displayPrompt(title, text, submitText, cancelText, onSubmit, onCancel, placeholder = "", value = "") {
+	hideModals();
+
+	promptTitle.textContent = title;
+	promptText.textContent = text;
+	if (value != "" || placeholder != "") {
+		promptInput.style.display = "";
+		promptInput.value = value;
+		promptInput.placeholder = placeholder; 
+	} else {
+		promptInput.style.display = "none";
+	}
+	if (!onSubmit || !submitText) {
+		promptSubmit.style.display = "none";
+	} else {
+		promptSubmit.textContent = submitText;
+		promptSubmit.onclick = () => {
+			hideModals();
+			onSubmit(promptInput.value);
+		};
+	}
+
+	let windowControls = promptModal.getElementsByClassName("window-controls")[0];
+	if (!onCancel || !cancelText) {
+		promptCancel.style.display = "none";
+		windowControls.addEventListener("click", () => {
+			hideModals();
+		});
+	} else {
+		promptCancel.style.display = "";
+		promptCancel.textContent = cancelText;
+		promptCancel.onclick = () => {
+			hideModals();
+			onCancel();
+		};
+		windowControls.addEventListener("click", () => {
+			hideModals();
+			onCancel();
+		});
+	}
+	
+	promptModal.style.display = "";
+	modalContainer.style.display = "flex";
+}
+
 function hideModals() {
 	addWordModal.style.display = "none";
+	promptModal.style.display = "none";
 	modalContainer.style.display = "none";
 }

@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "icon-foil 2.png",
+      "filename" : "1024x1024x1.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "icon-foil.png",
+      "filename" : "1024x1024x1 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "icon-foil 1.png",
+      "filename" : "1024x1024x1 2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

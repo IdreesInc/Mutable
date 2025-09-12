@@ -121,5 +121,11 @@ describe('Parsing tests', () => {
 			const result = pattern.isMatch("Idrees's car");
 			assert.isTrue(result);
 		});
+
+		it('Possessive word with different apostrophe', () => {
+			const pattern = new KeywordMute("#test", "Idrees");
+			const result = pattern.isMatch("Idrees’s");
+			assert.isTrue(result);
+		});
 	});
 });

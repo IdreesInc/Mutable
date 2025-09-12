@@ -734,7 +734,7 @@ class KeywordMute extends MutePattern {
 		super(id, "keyword");
 		this.word = word;
 		this.caseSensitive = caseSensitive;
-		const PART = "|\\s|[.!\\?,:;\\-\\_\\+\\=(\\)[\\]{\\}\\'\\\"\\<\\>])";
+		const PART = "|\\s|[.!\\?,:;\\-\\_\\+\\=(\\)[\\]{\\}\\'\\\"\\<\\>\\’])";
 		this.regex = new RegExp("(^" + PART + escapeRegExp(this.word) + "($" + PART, this.caseSensitive ? "" : "i");
 	}
 
@@ -838,6 +838,13 @@ class Settings {
 			host = host.substring(4);
 		}
 		delete this.websiteRules[host];
+	}
+
+	/**
+	 * @returns {number} The total number of patterns across all groups
+	 */
+	getPatternCount() {
+		return Object.values(this.groups).reduce((acc, group) => acc + group.patterns.length, 0);
 	}
 
 	/**
@@ -1020,12 +1027,21 @@ function getLegacySettings(onSuccess, onFail) {
 }
 
 /**
+ * Stringify the settings.
+ * @param {Settings} settings
+ * @returns {string}
+ */
+function stringifySettings(settings) {
+	return JSON.stringify(settings);
+}
+
+/**
  * Compress and serialize the settings in parts to account for the 8KB limit on the web extension sync storage.
  * @param {Settings} settings
  * @param {(arg0: Object<string, any>) => void} cb The function to call with the serialized settings
  */
 function serializeSettings(settings, cb) {
-	let serialized = JSON.stringify(settings);
+	let serialized = stringifySettings(settings);
 	// @ts-ignore
 	const compressed = pako.deflate(serialized, { to: "string" });
 	const base64 = btoa(String.fromCharCode(...compressed));

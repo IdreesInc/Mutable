@@ -422,6 +422,11 @@ input:checked + .toggle-inner:before {
 	justify-content: space-between;
 }
 
+.settings-block-vertical {
+	flex-direction: column;
+	align-items: baseline;
+}
+
 .settings-toggle {
 	height: 20px;
 	margin-right: 5px;
@@ -432,6 +437,46 @@ input:checked + .toggle-inner:before {
 	height: calc(20px + 2 * var(--light-stroke));
 	border-width: var(--light-stroke);
 	bottom: calc(-1 * var(--light-stroke));
+}
+
+.settings-button-list {
+	display: flex;
+	flex-direction: row;
+	justify-content:space-around;
+	width: 100%;
+	margin-top: 10px;
+}
+
+.settings-button {
+	width: 110px;
+	height: 32px;
+	border: var(--light-stroke) solid #000;
+	box-shadow: 0px 1px 0px 0px #000;
+	border-radius: 100px;
+	padding-top: 2px;
+	padding-left: 2px;
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	user-select: none;
+}
+
+.settings-button:active {
+	box-shadow: none;
+}
+
+#import-settings {
+	background: linear-gradient(to bottom right, #fce7ff 0%, #FFF 100%);
+}
+
+#export-settings {
+	background: linear-gradient(to bottom right, #dffeff 0%, #FFF 100%);
+}
+
+#prompt-modal > .window-top-bar {
+	background: linear-gradient(180deg, #fff6d6 0%, #FFF 100%);
 }
 
 .keyword-input {

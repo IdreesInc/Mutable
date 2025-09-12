@@ -1,67 +1,67 @@
 {
   "images" : [
     {
-      "filename" : "logo-1024.png",
+      "filename" : "1024x1024x1.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
     },
     {
-      "filename" : "foil-16.png",
+      "filename" : "16x16x1.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "16x16"
     },
     {
-      "filename" : "foil-32 1.png",
+      "filename" : "16x16x2.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "16x16"
     },
     {
-      "filename" : "foil-32.png",
+      "filename" : "32x32x1.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "32x32"
     },
     {
-      "filename" : "foil-64.png",
+      "filename" : "32x32x2.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "32x32"
     },
     {
-      "filename" : "foil-128.png",
+      "filename" : "128x128x1.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "128x128"
     },
     {
-      "filename" : "foil-256.png",
+      "filename" : "128x128x2.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "128x128"
     },
     {
-      "filename" : "foil-256 1.png",
+      "filename" : "256x256x1.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "256x256"
     },
     {
-      "filename" : "foil-512.png",
+      "filename" : "256x256x2.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "256x256"
     },
     {
-      "filename" : "foil-512 1.png",
+      "filename" : "512x512x1.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "512x512"
     },
     {
-      "filename" : "foil-1024.png",
+      "filename" : "512x512x2.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "512x512"
